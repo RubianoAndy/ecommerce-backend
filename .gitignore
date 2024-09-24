@@ -1,0 +1,47 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Dependency directories
+bower_components/
+
+# Build outputs
+dist/
+build/
+
+# Operating system files (MacOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Optional: Editor-specific settings
+.vscode/
+.idea/
+
+# Optional: Testing coverage reports
+coverage/
+
+# Optional: Ignore database and other sensitive files
+*.sqlite
+*.db
+*.sql
+*.p12
+
+# Optional: Ignore debug files
+*.pid
+*.seed
+*.pid.lock
+
+# Optional: Ignore system files
+.sass-cache/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
