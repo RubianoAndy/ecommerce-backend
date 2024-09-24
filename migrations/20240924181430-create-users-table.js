@@ -30,7 +30,7 @@ module.exports = {
         allowNull: false  // Obligatorio
       },
       password: {
-        type: Sequelize.STRING(30), // Puedes especificar un tamaño si lo deseas
+        type: Sequelize.TEXT,
         allowNull: false  // Obligatorio
       },
     });
