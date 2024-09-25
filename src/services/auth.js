@@ -37,7 +37,10 @@ router.post('/register', async (request, response) => {
         return response.status(201).json({ message: 'Usuario registrado exitosamente' });
     } catch (error) {
         console.error(error);
-        return response.status(500).json({ message: 'Error al registrar el usuario' });
+        return response.status(500).json({ 
+            message: 'Error al registrar el usuario',
+            details: error.message,
+        });
     }
 });
 
@@ -73,7 +76,10 @@ router.post('/login', async (request, response) => {
         });
     } catch (error) {
         console.error(error);
-        return response.status(500).json({ message: 'Error al iniciar sesión' });
+        return response.status(500).json({ 
+            message: 'Error al iniciar sesión',
+            details: error.message,
+        });
     }
 });
 
@@ -135,7 +141,10 @@ router.post('/refresh', async (request, response) => {
         });
     } catch (error) {
         console.error(error);
-        return response.status(500).json({ message: 'Error al renovar token' });
+        return response.status(500).json({ 
+            message: 'Error al renovar token',
+            details: error.message,
+        });
     }
 });
 
@@ -158,7 +167,10 @@ router.post('/logout', async (request, response) => {
         return response.status(400).json({ message: 'Sesión cerrada exitosamente' });
     } catch (error) {
         console.error(error);
-        return response.status(500).json({ message: 'Error al cerrar sesión' });
+        return response.status(500).json({ 
+            message: 'Error al cerrar sesión',
+            details: error.message,
+        });
     }
 });
 
