@@ -41,24 +41,31 @@ router.post('/register', async (request, response) => {
 });
 
 router.post('/login', async (request, response) => {
-    const { email, password} = request.body;
+    const { email, password } = request.body;
 
     try {
         const user = await User.findOne({ where: { email } });
         if (!user)
-            response.status(401).json({ message: 'Credenciales inválidas' });
+            return response.status(401).json({ message: 'Credenciales inválidas' });
+
+        if (!user.activated)
+            return response.status(403).json({ message: 'Usuario inactivo' });
+
+        const profile = await Profile.findOne({ where: { userId: user.id } });
+        if (!profile)
+            return response.status(401).json({ message: 'Perfil no encontrado' });
 
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid)
-            response.status(401).json({ message: 'Credenciales inválidas' });
+            return response.status(401).json({ message: 'Credenciales inválidas' });
 
-        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION} );
-        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        const accessToken = jwt.sign({ id: user.id, profileId: profile.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const refreshToken = jwt.sign({ id: user.id, profileId: profile.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
         const jti = uuidv4();
 
         const expiresIn = jwt.decode(refreshToken).exp * 1000;
 
-        const newRefreshToken = await Session.create({
+        await Session.create({
             userId: user.id,
             token: refreshToken,
             jti: jti,
@@ -68,7 +75,6 @@ router.post('/login', async (request, response) => {
         return response.status(200).json({
             accessToken,
             refreshToken,
-            // jti,
             message: 'Inicio de sesión exitoso',
         });
     } catch (error) {
@@ -93,7 +99,7 @@ router.post('/logout', async(request, response) => {
             sessionId: sessionExist.id,
         });
 
-        response.status(400).json({ message: 'Sesión cerrada exitosamente' });
+        return response.status(400).json({ message: 'Sesión cerrada exitosamente' });
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error al cerrar sesión' });
