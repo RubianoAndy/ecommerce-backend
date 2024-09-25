@@ -17,17 +17,18 @@ router.post('/register', async (request, response) => {
     const { email, password, name_1, lastname_1 } = request.body;
 
     try {
-        const userExist = await User.findOne({ where: { email } });
-        if (userExist)
+        const user = await User.findOne({ where: { email } });
+        if (user)
             return response.status(400).json({ message: 'El usuario ya existe' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = await User.create({
             email,
             password: hashedPassword,
         });
 
-        const newProfile = await Profile.create({
+        await Profile.create({
             name_1,
             lastname_1,
             userId: newUser.id
@@ -57,9 +58,8 @@ router.post('/login', async (request, response) => {
 
         const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
         const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
-        const jti = uuidv4();
-
         const expiresIn = jwt.decode(refreshToken).exp * 1000;
+        const jti = uuidv4();
 
         await Session.create({
             userId: user.id,
@@ -79,20 +79,77 @@ router.post('/login', async (request, response) => {
     }
 });
 
-router.post('/logout', async(request, response) => {
+router.post('/refresh', async (request, response) => {
     const { refreshToken } = request.body;
 
     try {
-        const sessionExist = await Session.findOne({ where: { token: refreshToken } });
-        if (!sessionExist)
+        if (!refreshToken)
+            return response.status(401).json({ message:'Refresh token no proporcionado' });
+
+        const session = await Session.findOne({ where: { token: refreshToken} });
+        if (!session)
+            return response.status(401).json({ message: 'No hay sesión iniciada' });
+
+        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: session.id } });
+        if (blacklistedSession)
+            return response.status(400).json({ message: 'Token inválido' });
+
+        let refreshTokenDecoded = null;
+        try {
+            refreshTokenDecoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        } catch (error) {
+            console.error(error);
+            return response.status(401).json({ message: 'Token inválido' });
+        }
+
+        const user = await User.findOne({ where: { id: refreshTokenDecoded.id} });
+        if (!user)
+            return response.status(401).json({ message: 'No existe usuario asociado' });
+        
+        if (!user.activated)
+            return response.status(403).json({ message: 'Usuario inactivo' });
+        
+        const newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        const expiresIn = jwt.decode(newRefreshToken).exp * 1000;
+        const jti = uuidv4();
+
+        await Session_Blacklist.create({
+            sessionId: session.id,
+        });
+
+        await Session.create({
+            userId: user.id,
+            token: newRefreshToken,
+            jti,
+            expiresIn,
+        });
+
+        return response.status(201).json({ 
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            message: 'Token renovado satisfactoriamente'
+        });
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({ message: 'Error al renovar token' });
+    }
+});
+
+router.post('/logout', async (request, response) => {
+    const { refreshToken } = request.body;
+
+    try {
+        const session = await Session.findOne({ where: { token: refreshToken } });
+        if (!session)
             return response.status(401).json({ message: 'No se pudo cerrar sesión: token inválido' });
 
-        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: sessionExist.id }})
+        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: session.id }})
         if (blacklistedSession)
             return response.status(400).json({ message: 'La sesión ya estaba cerrada' });
 
         await Session_Blacklist.create({
-            sessionId: sessionExist.id,
+            sessionId: session.id,
         });
 
         return response.status(400).json({ message: 'Sesión cerrada exitosamente' });
