@@ -46,7 +46,7 @@ module.exports = {
         type: Sequelize.STRING(20),
         allowNull: true
       },
-      identification_number: {
+      identificationNumber: {
         type: Sequelize.STRING,
         allowNull: true
       },

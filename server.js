@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(cors({
-    origin: process.env.NEXTJS_FRONTEND_CORS
+    origin: process.env.API_URL
 }));
 
 app.use('/backend/auth', authRoutes);

@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(20),
             allowNull: true,
         },
-        identification_number: {
+        identificationNumber: {
             type: DataTypes.STRING,
             allowNull: true,
         },
