@@ -40,21 +40,22 @@
 
 # Ecommerce backend
 
-This project was generated with this dependencies:
+This project was generated with [Node.js](https://nodejs.org/en) version 20.17.0, [NPM](https://nodejs.org/en) version 10.8.2 
+and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 16.4 and its dependencies are:
 
-| dependencies                    | Version |
-| ------------------------------- | :------ |
-| `Python`                        | 3.12.4  |
-| `pip`                           | 24.1.2  |
-| `Django`                        | 5.0.6   |
-| `django-cors-headers`           | 4.4.0   |
-| `djangorestframework`           | 3.15.2  |
-| `djangorestframework-simplejwt` | 5.3.1   |
-| `psycopg2-binary`               | 2.9.9   |
-| `PyJWT`                         | 2.9.0   |
-| `tzdata`                        | 2024.1  |
+| Dependency   | Version |
+| ------------ | :------ |
+| bcrypt       | 5.1.1   |
+| cors         | 2.8.5   |
+| dotenv       | 16.4.5  |
+| express      | 4.21.0  |
+| jsonwebtoken | 9.0.2   |
+| pg           | 8.13.0  |
+| pg-hstore    | 2.3.4   |
+| sequelize    | 6.37.3  |
+| uuid         | 10.0.0  |
 
-## Initial install
+## How to create a project in express?
 
 For documentation purposes, this repository was created as follows:
 
@@ -63,16 +64,17 @@ For documentation purposes, this repository was created as follows:
 | 1-  | Create a folder                             | N/A                                    |
 | 2-  | Inside the folder initialize node           | `npm init -y`                          |
 | 3-  | Install express                             | `npm install express`                  |
-| 4-  | Create the environment variables            | `npm install dotenv`                   |
-| 5-  | Create .env file (more information below)   | N/A                                    |
-| 6-  | Create server.js file                       | N/A                                    |
-| 7-  | Install cors                                | `npm install cors`                     |
-| 8-  | Install sequelize and postgreSQL database   | `npm install sequelize pg pg-hstore`   |
-| 9-  | Install sequelize cli                       | `npm install --save-dev sequelize-cli` |
-| 10- | Init sequelize                              | `npx sequelize-cli init`               |
-| 11- | Install bcrypt to hass the passwords        | `npm install bcrypt`                   |
-| 12- | Install JWT                                 | `npm install jsonwebtoken`             |
-| 13- | Install JTI for JWT                         | `npm install uuid`                     |
+| 4-  | Create the .gitignore file                  | N/A                                    |
+| 5-  | Create the environment variables            | `npm install dotenv`                   |
+| 6-  | Create .env file (more information below)   | N/A                                    |
+| 7-  | Create server.js file                       | N/A                                    |
+| 8-  | Install cors                                | `npm install cors`                     |
+| 9-  | Install sequelize and postgreSQL database   | `npm install sequelize pg pg-hstore`   |
+| 10- | Install sequelize cli                       | `npm install --save-dev sequelize-cli` |
+| 11- | Init sequelize                              | `npx sequelize-cli init`               |
+| 12- | Install bcrypt to hass the passwords        | `npm install bcrypt`                   |
+| 13- | Install JWT                                 | `npm install jsonwebtoken`             |
+| 14- | Install JTI for JWT                         | `npm install uuid`                     |
 
 ### Parameters for the .env file
 
@@ -98,3 +100,20 @@ JWT_REFRESH_EXPIRATION=30d
 ```
 
 ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
+
+### Setting up sequelize for database migrations
+
+When Sequelize is initialized, several files and folders are automatically generated. However, in order to integrate the environment variables into the configuration, it is necessary to convert the config.json file to config.ts. Additionally, in the index.js file, where the configuration import is performed, the extension must also be adjusted to correctly point to .ts instead of .json. Below are the commands to manage database migrations:
+
+| Command                                                    | What it does?             |
+| ---------------------------------------------------------- | :------------------------ |
+| `npx sequelize-cli migration:create --name migration-name` | Create the migration file |
+| `npx sequelize-cli db:migrate`                             | Run the migration         |
+| `npx sequelize-cli db:migrate:undo`                        | Revert the migration      |
+| `npx sequelize-cli db:migrate:undo:all`                    | Revert all migrations     |
+
+<hr>
+
+<p align="center">
+    &copy; 2024 <a href="https://YouTube.com/@RubianoAndy" target="_blank" class="hover:underline">Andy Rubiano™ - International company</a>. All rights reserved.
+</p>
