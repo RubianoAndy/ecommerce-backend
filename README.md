@@ -96,3 +96,5 @@ JWT_REFRESH_SECRET=2eb7f58ae77fec57c01b7d6698c421ab457253451640a354ff9620cf77a5f
 JWT_ACCESS_EXPIRATION=1h
 JWT_REFRESH_EXPIRATION=30d
 ```
+
+> ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
