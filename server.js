@@ -2,7 +2,9 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const authRoutes = require('./src/services/auth')
+
+const registerRequests = require('./src/services/register');
+const authRequests = require('./src/services/auth');
 
 const port = process.env.SERVER_PORT;
 
@@ -16,7 +18,11 @@ app.use(cors({
     origin: process.env.API_URL
 }));
 
-app.use('/backend/auth', authRoutes);
+app.use('/backend', registerRequests);
+app.use('/backend/auth', authRequests);
+app.use((request, response) => {
+    response.status(404).send('<h1>Error 404</h1>')  // Para todas las peticiones que no encuentra, se le coloca el 404, es importante dejar al final de todas las peticiones
+});
 
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}/`);
