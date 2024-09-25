@@ -50,6 +50,7 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | dotenv       | 16.4.5  |
 | express      | 4.21.0  |
 | jsonwebtoken | 9.0.2   |
+| nodemailer   | 6.9.15  |
 | pg           | 8.13.0  |
 | pg-hstore    | 2.3.4   |
 | sequelize    | 6.37.3  |
@@ -77,6 +78,7 @@ For documentation purposes, this repository was created as follows:
 | 13- | Install JWT                                 | `npm install jsonwebtoken`             |
 | 14- | Install JTI for JWT                         | `npm install uuid`                     |
 | 15- | Install Winston for error.log file          | `npm install winston`                  |
+| 16- | Install nodemailer for send emails          | `npm install nodemailer`               |
 
 ### Parameters for the .env file
 
