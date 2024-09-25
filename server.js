@@ -16,7 +16,7 @@ app.use(cors({
     origin: process.env.NEXTJS_FRONTEND_CORS
 }));
 
-app.use('/backend/auth', authRoutes)
+app.use('/backend/auth', authRoutes);
 
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}/`);

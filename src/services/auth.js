@@ -77,4 +77,27 @@ router.post('/login', async (request, response) => {
     }
 });
 
+router.post('/logout', async(request, response) => {
+    const { refreshToken } = request.body;
+
+    try {
+        const sessionExist = await Session.findOne({ where: { token: refreshToken } });
+        if (!sessionExist)
+            return response.status(401).json({ message: 'No se pudo cerrar sesión: token inválido' });
+
+        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: sessionExist.id }})
+        if (blacklistedSession)
+            return response.status(400).json({ message: 'La sesión ya estaba cerrada' });
+
+        await Session_Blacklist.create({
+            sessionId: sessionExist.id,
+        });
+
+        response.status(400).json({ message: 'Sesión cerrada exitosamente' });
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({ message: 'Error al cerrar sesión' });
+    }
+});
+
 module.exports = router;
