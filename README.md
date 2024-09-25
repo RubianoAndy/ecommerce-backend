@@ -97,4 +97,4 @@ JWT_ACCESS_EXPIRATION=1h
 JWT_REFRESH_EXPIRATION=30d
 ```
 
-> ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
+⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
