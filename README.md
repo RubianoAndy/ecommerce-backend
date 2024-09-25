@@ -54,6 +54,7 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | pg-hstore    | 2.3.4   |
 | sequelize    | 6.37.3  |
 | uuid         | 10.0.0  |
+| winston      | 3.14.2  |
 
 ## How to create a project in express?
 
@@ -75,6 +76,7 @@ For documentation purposes, this repository was created as follows:
 | 12- | Install bcrypt to hass the passwords        | `npm install bcrypt`                   |
 | 13- | Install JWT                                 | `npm install jsonwebtoken`             |
 | 14- | Install JTI for JWT                         | `npm install uuid`                     |
+| 15- | Install Winston for error.log file          | `npm install winston`                  |
 
 ### Parameters for the .env file
 
@@ -91,7 +93,7 @@ DB_NAME=shop-database
 DB_USER=postgres
 DB_PASSWORD=Pa22w0rd
 
-# Para generar los secretos de forma aleatoria usar este comando
+# To generate the secrets randomly use this command
 # node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
 JWT_ACCESS_SECRET=8ffce1fbb5dd4600eae56c0e004ad818e05d90188281f334d053275dcd9aa415
 JWT_REFRESH_SECRET=2eb7f58ae77fec57c01b7d6698c421ab457253451640a354ff9620cf77a5fad6
