@@ -51,16 +51,12 @@ router.post('/login', async (request, response) => {
         if (!user.activated)
             return response.status(403).json({ message: 'Usuario inactivo' });
 
-        const profile = await Profile.findOne({ where: { userId: user.id } });
-        if (!profile)
-            return response.status(401).json({ message: 'Perfil no encontrado' });
-
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid)
             return response.status(401).json({ message: 'Credenciales inválidas' });
 
-        const accessToken = jwt.sign({ id: user.id, profileId: profile.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
-        const refreshToken = jwt.sign({ id: user.id, profileId: profile.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
         const jti = uuidv4();
 
         const expiresIn = jwt.decode(refreshToken).exp * 1000;
