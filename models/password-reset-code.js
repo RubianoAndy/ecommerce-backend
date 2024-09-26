@@ -1,8 +1,8 @@
 'use strict';
 
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
     const PasswordResetCode = sequelize.define('PasswordResetCode', {
         createdAt: {
             type: DataTypes.DATE,

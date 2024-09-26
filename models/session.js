@@ -1,8 +1,8 @@
 'use strict';
 
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
     const Session = sequelize.define('Session', {
         id: {
             type: DataTypes.BIGINT,
