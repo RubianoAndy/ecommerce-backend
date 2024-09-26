@@ -47,8 +47,9 @@ const sendWelcomeEmail = async (email, name_1, lastname_1) => {
             .replace('{{ apiURL }}', process.env.API_URL);
 
         const mailContent = {
-            to: process.env.EMAIL_HOST_USER,
-            subject: `Bienvenido(a) ${name_1}!`,
+            // from: `"${name}" <${email}>`,
+            to: email,
+            subject: `¡Bienvenido(a) ${name_1}!`,
             html: personalizedHtml
         };
 
