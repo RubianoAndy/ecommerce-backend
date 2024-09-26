@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Session.associate = (models) => {
         Session.belongsTo(models.User, { foreignKey: 'userId' });
-        Session.hasOne(models.Session_Blacklist, { foreignKey: 'sessionId' });
+        Session.hasOne(models.SessionBlacklist, { foreignKey: 'sessionId' });
     }
 
     return Session;

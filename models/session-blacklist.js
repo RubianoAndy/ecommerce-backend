@@ -3,7 +3,7 @@
 const { Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    const Session_Blacklist = sequelize.define('Session_Blacklist', {
+    const SessionBlacklist = sequelize.define('SessionBlacklist', {
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -35,9 +35,9 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
     });
 
-    Session_Blacklist.associate = (models) => {
-        Session_Blacklist.belongsTo(models.Session, { foreignKey: 'sessionId' });
+    SessionBlacklist.associate = (models) => {
+        SessionBlacklist.belongsTo(models.Session, { foreignKey: 'sessionId' });
     }
 
-    return Session_Blacklist;
+    return SessionBlacklist;
 };

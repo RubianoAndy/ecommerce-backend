@@ -32,33 +32,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const router = express.Router();
-
 const sendWelcomeEmail = async (email, name_1, lastname_1) => {
-    const filePath = path.join(__dirname, '../utils/email/register.html');
-
-    try {
-        const htmlContent = await fs.readFile(filePath, 'utf-8');
-
-        const personalizedHtml = htmlContent
-            .replace('{{ name_1 }}', name_1)
-            .replace('{{ lastname_1 }}', lastname_1)
-            .replace('{{ email }}', email)
-            .replace('{{ apiURL }}', process.env.API_URL);
-
-        const mailContent = {
-            // from: `"${name}" <${email}>`,
-            to: email,
-            subject: `¡Bienvenido(a) ${name_1}!`,
-            html: personalizedHtml
-        };
-
-        await transporter.sendMail(mailContent);
-    } catch (error) {
-        logger.error(`Error al enviar el correo: ${error.message}`);
-        throw error; // Lanzar el error para manejarlo en la ruta principal
-    }
+    
 };
+
+const router = express.Router();
 
 router.post('/register', async (request, response) => {
     const { email, password, name_1, lastname_1 } = request.body;
@@ -87,7 +65,28 @@ router.post('/register', async (request, response) => {
             userId: newUser.id
         });
 
-        await sendWelcomeEmail(email, name_1, lastname_1);
+        const filePath = path.join(__dirname, '../utils/email/register.html');
+
+        try {
+            const htmlContent = await fs.readFile(filePath, 'utf-8');
+
+            const personalizedHtml = htmlContent
+                .replace('{{ name_1 }}', name_1)
+                .replace('{{ lastname_1 }}', lastname_1)
+                .replace('{{ email }}', email)
+                .replace('{{ apiURL }}', process.env.API_URL);
+
+            const mailContent = {
+                // from: `"${name}" <${email}>`,
+                to: email,
+                subject: `¡Bienvenido(a) ${name_1}!`,
+                html: personalizedHtml
+            };
+
+            await transporter.sendMail(mailContent);
+        } catch (error) {
+            logger.error(`Error al enviar el correo: ${error.message}`);
+        }
 
         return response.status(201).json({ message: 'Usuario registrado exitosamente' });
     } catch (error) {

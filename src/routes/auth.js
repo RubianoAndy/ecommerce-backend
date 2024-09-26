@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
 require('dotenv').config();
 
-const { User, Session, Session_Blacklist } = require('../../models');
+const { User, Session, SessionBlacklist } = require('../../models');
 
 const logger = winston.createLogger({
     level: 'error',
