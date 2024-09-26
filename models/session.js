@@ -38,10 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false, // Obligatorio
         },
-        expiresIn: {
-            type: DataTypes.DATE,
-            allowNull: false, // Obligatorio
-        },
     }, {
         tableName: 'sessions', // Nombre de la tabla en la base de datos
         timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente

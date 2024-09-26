@@ -44,7 +44,6 @@ router.post('/login', async (request, response) => {
             userId: user.id,
             token: refreshToken,
             jti: uuidv4(),
-            expiresIn: jwt.decode(refreshToken).exp * 1000,
         });
 
         return response.status(200).json({
@@ -109,7 +108,6 @@ router.post('/refresh', async (request, response) => {
             userId: user.id,
             token: newRefreshToken,
             jti: uuidv4(),
-            expiresIn: jwt.decode(newRefreshToken).exp * 1000,
         });
 
         return response.status(201).json({ 

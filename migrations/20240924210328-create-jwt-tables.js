@@ -38,10 +38,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false, // Obligatorio
       },
-      expiresIn: {
-        type: Sequelize.DATE,
-        allowNull: false, // Obligatorio
-      },
     });
 
     await queryInterface.createTable('sessions_blacklist', {
