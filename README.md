@@ -55,6 +55,7 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | pg-hstore    | 2.3.4   |
 | sequelize    | 6.37.3  |
 | uuid         | 10.0.0  |
+| validator    | 13.12.0 |
 | winston      | 3.14.2  |
 
 ## How to create a project in express?
@@ -79,6 +80,7 @@ For documentation purposes, this repository was created as follows:
 | 14- | Install JTI for JWT                         | `npm install uuid`                     |
 | 15- | Install Winston for error.log file          | `npm install winston`                  |
 | 16- | Install nodemailer for send emails          | `npm install nodemailer`               |
+| 17- | Install validator to validate fields        | `npm install validator`                |
 
 ### Parameters for the .env file
 
