@@ -31,8 +31,8 @@ module.exports = (sequelize) => {
             allowNull: false, // Obligatorio para establecer la relación
         },
     }, {
-        tableName: 'sessions_blacklist', // Nombre de la tabla en la base de datos
-        timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
+        tableName: 'sessions_blacklist',
+        timestamps: true,
     });
 
     SessionBlacklist.associate = (models) => {

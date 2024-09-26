@@ -4,6 +4,12 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('password_reset_codes', {
+      id: {
+        type: Sequelize.BIGINT,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

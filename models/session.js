@@ -39,8 +39,8 @@ module.exports = (sequelize) => {
             allowNull: false, // Obligatorio
         },
     }, {
-        tableName: 'sessions', // Nombre de la tabla en la base de datos
-        timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
+        tableName: 'sessions',
+        timestamps: true,
     });
 
     Session.associate = (models) => {

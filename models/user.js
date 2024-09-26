@@ -34,8 +34,8 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
     }, {
-        tableName: 'users', // Nombre de la tabla en la base de datos
-        timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
+        tableName: 'users',
+        timestamps: true,
     });
 
     User.associate = (models) => {

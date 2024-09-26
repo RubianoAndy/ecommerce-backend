@@ -57,8 +57,8 @@ module.exports = (sequelize) => {
             allowNull: true,
         },
     }, {
-        tableName: 'profiles', // Nombre de la tabla en la base de datos
-        timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
+        tableName: 'profiles',
+        timestamps: true,
     });
 
     Profile.associate = (models) => {

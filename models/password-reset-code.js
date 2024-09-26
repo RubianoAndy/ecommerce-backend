@@ -4,6 +4,12 @@ const { Sequelize, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
     const PasswordResetCode = sequelize.define('PasswordResetCode', {
+        id: {
+            type: DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false
+        },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
@@ -34,8 +40,8 @@ module.exports = (sequelize) => {
             allowNull: false,
         }
     }, {
-        tableName: 'password_reset_codes', // Nombre de la tabla en la base de datos
-        timestamps: true, // Para que Sequelize maneje createdAt y updatedAt automáticamente
+        tableName: 'password_reset_codes',
+        timestamps: true,
     });
 
     PasswordResetCode.associate = (models) => {
