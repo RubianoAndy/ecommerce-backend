@@ -89,7 +89,7 @@ The environment variables used in this project are as follows:
 ```sh
 SERVER_PORT=3000
 
-API_URL=http://localhost:4200
+API_URL=http://localhost:4200/
 
 DB_HOST=localhost
 DB_PORT=5432
@@ -103,6 +103,14 @@ JWT_ACCESS_SECRET=8ffce1fbb5dd4600eae56c0e004ad818e05d90188281f334d053275dcd9aa4
 JWT_REFRESH_SECRET=2eb7f58ae77fec57c01b7d6698c421ab457253451640a354ff9620cf77a5fad6
 JWT_ACCESS_EXPIRATION=1h
 JWT_REFRESH_EXPIRATION=30d
+
+# To get HOST_PASSWORD, in Google account settings, look for App passwords (IMPORTANT ENABLE 2-STEP VERIFICATION)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+EMAIL_HOST_USER=email@gmail.com
+EMAIL_HOST_PASSWORD=<HOST-PASSWORD>
 ```
 
 ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
