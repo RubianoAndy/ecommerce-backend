@@ -32,10 +32,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendWelcomeEmail = async (email, name_1, lastname_1) => {
-    
-};
-
 const router = express.Router();
 
 router.post('/register', async (request, response) => {

@@ -52,7 +52,7 @@ router.post('/login', async (request, response) => {
             message: 'Inicio de sesión exitoso',
         });
     } catch (error) {
-        logger.error(`Error al iniciar sesión:${error.message}`);
+        logger.error(`Error al iniciar sesión: ${error.message}`);
         return response.status(500).json({ 
             message: 'Error al iniciar sesión',
             details: error.message,
@@ -71,7 +71,7 @@ router.post('/refresh', async (request, response) => {
         try {
             refreshTokenDecoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         } catch (error) {
-            logger.error(`Error al verificar el refresh token:${error.message}`);
+            logger.error(`Error al verificar el refresh token: ${error.message}`);
             return response.status(401).json({ message: 'Token inválido' });
         }
 
@@ -116,7 +116,7 @@ router.post('/refresh', async (request, response) => {
             message: 'Token renovado satisfactoriamente'
         });
     } catch (error) {
-        logger.error(`Error al renovar token:${error.message}`);
+        logger.error(`Error al renovar token: ${error.message}`);
         return response.status(500).json({ 
             message: 'Error al renovar token',
             details: error.message,
@@ -142,7 +142,7 @@ router.post('/logout', async (request, response) => {
 
         return response.status(400).json({ message: 'Sesión cerrada exitosamente' });
     } catch (error) {
-        logger.error(`Error al cerrar sesión:${error.message}`);
+        logger.error(`Error al cerrar sesión: ${error.message}`);
         return response.status(500).json({ 
             message: 'Error al cerrar sesión',
             details: error.message,
