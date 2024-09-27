@@ -46,14 +46,14 @@ router.post('/generate-code', async (request, response) => {
     try {
         const user = await User.findOne({ where: { email } });
         if (!user)
-            return response.status(403).json({ message: 'El usuario no existe' });
+            return response.status(404).json({ message: 'El usuario no existe' });
         
         if (!user.activated)
-            return response.status(400).json({ message: 'El usuario no está activo' });
+            return response.status(403).json({ message: 'El usuario no está activo' });
 
         const profile = await Profile.findOne({ where: { userId: user.id } })
         if (!profile)
-            return response.status(403).json({ message: 'El usuario no tiene perfil asociado' });
+            return response.status(404).json({ message: 'El usuario no tiene perfil asociado' });
 
         const digits = 7;
         let code = '', isUnique = false;
@@ -100,6 +100,49 @@ router.post('/generate-code', async (request, response) => {
         logger.error(`Error al generar el código: ${error.message}`);
         return response.status(500).json({
             message: 'Error al generar el código',
+            details: error.message,
+        });
+    }
+});
+
+router.post('/verify-code', async (request, response) => {
+    const {userId, code, newPassword} = request.body;
+
+    if (!userId || !code || !newPassword)
+        return response.status(400).json({ message: 'Todos los campos son obligatorios' });
+
+    try {
+        const user = await User.findOne({ where: { id: userId } })
+        if (!user)
+            return response.status(404).json({ message: 'El usuario no existe' });
+
+        if (!user.activated)
+            return response.status(403).json({ message: 'El usuario no está activo' });
+
+        const savedCode = await PasswordResetCode.findOne({ where: { code, userId } });
+        if (!savedCode)
+            return response.status(404).json({ message: 'No existe un código asociado al usuario solicitado' });
+
+        const currentTime = new Date();
+        if (currentTime > savedCode.expiresIn) {
+            await PasswordResetCode.destroy({ where: { userId } });
+            return response.status(400).json({ message: 'Código vencido' });
+        }
+        
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await User.update(
+            { password: hashedPassword },
+            { where : {id: userId} },
+        );
+
+        await PasswordResetCode.destroy({ where: { userId } });
+
+        return response.status(200).json({ message: 'Contraseña cambiada exitosamente' });
+    } catch (error) {
+        logger.error(`Error al comprobar el código: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al comprobar el código',
             details: error.message,
         });
     }

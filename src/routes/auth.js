@@ -84,7 +84,7 @@ router.post('/refresh', async (request, response) => {
 
         const user = await User.findOne({ where: { id: refreshTokenDecoded.id} });
         if (!user)
-            return response.status(401).json({ message: 'No existe usuario asociado' });
+            return response.status(404).json({ message: 'No existe usuario asociado' });
         
         if (!user.activated)
             return response.status(403).json({ message: 'Usuario inactivo' });
