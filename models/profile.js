@@ -44,8 +44,12 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING(20),
             allowNull: true,
         },
-        identificationNumber: {
-            type: DataTypes.STRING,
+        dniType: {
+            type: DataTypes.STRING(20),
+            allowNull: true,
+        },
+        dni: {
+            type: DataTypes.STRING(30),
             allowNull: true,
         },
         prefix: {
