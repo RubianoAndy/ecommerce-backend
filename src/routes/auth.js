@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
 require('dotenv').config();
 
-const { User, Session, SessionBlacklist } = require('../../models');
+const { User, Session } = require('../../models');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -22,7 +22,7 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-router.post('/login', async (request, response) => {
+router.post('/sign-in', async (request, response) => {
     const { email, password } = request.body;
 
     try {
@@ -124,7 +124,7 @@ router.post('/refresh', async (request, response) => {
     }
 });
 
-router.post('/logout', async (request, response) => {
+router.post('/sign-out', async (request, response) => {
     const { refreshToken } = request.body;
 
     try {

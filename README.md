@@ -89,7 +89,7 @@ The environment variables used in this project are as follows:
 ```sh
 SERVER_PORT=3000
 
-API_URL=http://localhost:4200/
+API_URL=http://localhost:4200
 
 DB_HOST=localhost
 DB_PORT=5432
