@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
 require('dotenv').config();
 
-const { User, Session } = require('../../models');
+const { User, Session, SessionBlacklist} = require('../../models');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -93,14 +93,14 @@ router.post('/refresh', async (request, response) => {
         if (!session)
             return response.status(401).json({ message: 'No hay sesión iniciada' });
 
-        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: session.id } });
+        const blacklistedSession = await SessionBlacklist.findOne({ where: { sessionId: session.id } });
         if (blacklistedSession)
             return response.status(400).json({ message: 'Token inválido' });
         
         const newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
         const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
-        await Session_Blacklist.create({
+        await SessionBlacklist.create({
             sessionId: session.id,
         });
 
@@ -132,15 +132,15 @@ router.post('/sign-out', async (request, response) => {
         if (!session)
             return response.status(401).json({ message: 'No se pudo cerrar sesión: token inválido' });
 
-        const blacklistedSession = await Session_Blacklist.findOne({ where: { sessionId: session.id }})
+        const blacklistedSession = await SessionBlacklist.findOne({ where: { sessionId: session.id }})
         if (blacklistedSession)
-            return response.status(400).json({ message: 'La sesión ya estaba cerrada' });
+            return response.status(403).json({ message: 'La sesión ya estaba cerrada' });
 
-        await Session_Blacklist.create({
+        await SessionBlacklist.create({
             sessionId: session.id,
         });
 
-        return response.status(400).json({ message: 'Sesión cerrada exitosamente' });
+        return response.status(200).json({ message: 'Sesión cerrada exitosamente' });
     } catch (error) {
         logger.error(`Error al cerrar sesión: ${error.message}`);
         return response.status(500).json({ 
