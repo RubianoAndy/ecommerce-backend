@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const registerRequests = require('./src/routes/register');
 const authRequests = require('./src/routes/auth');
 const forgotPasswordRequests = require('./src/routes/forgot-password')
+const profileRequests = require('./src/routes/profile');
 
 const port = process.env.SERVER_PORT;
 
@@ -23,8 +24,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use('', registerRequests);
-app.use('', authRequests);
 app.use('', forgotPasswordRequests);
+app.use('', authRequests);
+app.use('', profileRequests);
+
 app.use((request, response) => {
     response.status(404).send('<h1>Error 404</h1>')  // Para todas las peticiones que no encuentra, se le coloca el 404, es importante dejar al final de todas las peticiones
 });
