@@ -37,8 +37,8 @@ router.post('/sign-in', async (request, response) => {
         if (!passwordValid)
             return response.status(401).json({ message: 'Credenciales inválidas' });
 
-        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
-        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        const accessToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const refreshToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
         await Session.create({
             userId: user.id,
@@ -60,12 +60,12 @@ router.post('/sign-in', async (request, response) => {
     }
 });
 
-router.post('/refresh', async (request, response) => {
+router.post('/refresh-token', async (request, response) => {
     const { refreshToken } = request.body;
 
     try {
         if (!refreshToken)
-            return response.status(401).json({ message:'Token no proporcionado' });
+            return response.status(401).json({ message: 'Token no proporcionado' });
 
         let refreshTokenDecoded = null;
         try {
@@ -82,27 +82,28 @@ router.post('/refresh', async (request, response) => {
         if (refreshTokenDecoded.exp < currentTime)
             return response.status(401).json({ message: 'Token expirado' });
 
-        const user = await User.findOne({ where: { id: refreshTokenDecoded.id} });
+        const user = await User.findOne({ where: { id: refreshTokenDecoded.id } });
         if (!user)
             return response.status(404).json({ message: 'No existe usuario asociado' });
         
         if (!user.activated)
             return response.status(403).json({ message: 'Usuario inactivo' });
 
-        const session = await Session.findOne({ where: { token: refreshToken} });
+        const session = await Session.findOne({ where: { token: refreshToken } });
         if (!session)
             return response.status(401).json({ message: 'No hay sesión iniciada' });
 
         const blacklistedSession = await SessionBlacklist.findOne({ where: { sessionId: session.id } });
         if (blacklistedSession)
             return response.status(400).json({ message: 'Token inválido' });
-        
-        const newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
-        const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+
+        const newAccessToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const newRefreshToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
         await SessionBlacklist.create({
             sessionId: session.id,
         });
+        // await session.destroy();
 
         await Session.create({
             userId: user.id,
