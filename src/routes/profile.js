@@ -24,7 +24,7 @@ router.get('/profile', async (request, response) => {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer '))
-        return response.status(404).json({ message: 'Token de acceso no proporcionado' });
+        return response.status(401).json({ message: 'Token de acceso no proporcionado' });
 
     const accessToken = authHeader.split(' ')[1];
 
