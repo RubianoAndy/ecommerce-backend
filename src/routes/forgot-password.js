@@ -81,7 +81,8 @@ router.post('/generate-code', async (request, response) => {
                 .replace('{{ lastname_1 }}', profile.lastname_1)
                 .replace('{{ apiURL }}', process.env.API_URL)
                 .replace('{{ expirationTime }}', expirationTime)
-                .replace('{{ code }}', code);
+                .replace('{{ code }}', code)
+                .replace('{{ support_number }}', process.env.SUPPORT_WHATSAPP);
             
             const mailContent = {
                 // from: `"${name}" <${email}>`,
@@ -94,7 +95,10 @@ router.post('/generate-code', async (request, response) => {
             logger.error(`Error al enviar el correo: ${error.message}`);
         }
 
-        response.status(201).json({ message: 'Código generado satisfactoriamente' });
+        response.status(201).json({ 
+            message: 'Código generado satisfactoriamente',
+            userId: user.id,
+        });
 
     } catch (error) {
         logger.error(`Error al generar el código: ${error.message}`);
@@ -106,9 +110,9 @@ router.post('/generate-code', async (request, response) => {
 });
 
 router.post('/verify-code', async (request, response) => {
-    const {userId, code, newPassword} = request.body;
+    const {userId, code, password} = request.body;
 
-    if (!userId || !code || !newPassword)
+    if (!userId || !code || !password)
         return response.status(400).json({ message: 'Todos los campos son obligatorios' });
 
     try {
@@ -118,6 +122,10 @@ router.post('/verify-code', async (request, response) => {
 
         if (!user.activated)
             return response.status(403).json({ message: 'El usuario no está activo' });
+
+        const profile = await Profile.findOne({ where: { userId } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
 
         const savedCode = await PasswordResetCode.findOne({ where: { code, userId } });
         if (!savedCode)
@@ -129,7 +137,7 @@ router.post('/verify-code', async (request, response) => {
             return response.status(400).json({ message: 'Código vencido' });
         }
         
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         await User.update(
             { password: hashedPassword },
@@ -137,6 +145,29 @@ router.post('/verify-code', async (request, response) => {
         );
 
         await PasswordResetCode.destroy({ where: { userId } });
+
+        const filePath = path.join(__dirname, '../utils/email/password-changed-notification.html');
+
+        try {
+            const htmlContent = await fs.readFile(filePath, 'utf-8');
+
+            const personalizedHtml = htmlContent
+                .replace('{{ name_1 }}', profile.name_1)
+                .replace('{{ lastname_1 }}', profile.lastname_1)
+                .replace('{{ email }}', user.email)
+                .replace('{{ support_email }}', process.env.SUPPORT_EMAIL)
+                .replace('{{ support_number }}', process.env.SUPPORT_WHATSAPP);
+            
+            const mailContent = {
+                // from: `"${name}" <${email}>`,
+                to: user.email,
+                subject: `¡Cambio de contraseña exitoso!`,
+                html: personalizedHtml
+            };
+            await transporter.sendMail(mailContent);
+        } catch (error) {
+            logger.error(`Error al enviar el correo: ${error.message}`);
+        }
 
         return response.status(200).json({ message: 'Contraseña cambiada exitosamente' });
     } catch (error) {

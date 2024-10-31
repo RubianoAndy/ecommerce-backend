@@ -90,6 +90,8 @@ The environment variables used in this project are as follows:
 SERVER_PORT=3000
 
 API_URL=http://localhost:4200
+SUPPORT_EMAIL=email@gmail.com
+SUPPORT_WHATSAPP=57317*******
 
 DB_HOST=localhost
 DB_PORT=5432

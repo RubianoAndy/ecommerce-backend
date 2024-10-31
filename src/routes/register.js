@@ -70,7 +70,8 @@ router.post('/register', async (request, response) => {
                 .replace('{{ name_1 }}', name_1)
                 .replace('{{ lastname_1 }}', lastname_1)
                 .replace('{{ email }}', email)
-                .replace('{{ apiURL }}', process.env.API_URL);
+                .replace('{{ apiURL }}', process.env.API_URL)
+                .replace('{{ support_number }}', process.env.SUPPORT_WHATSAPP);
 
             const mailContent = {
                 // from: `"${name}" <${email}>`,
