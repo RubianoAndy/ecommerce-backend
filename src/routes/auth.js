@@ -75,13 +75,6 @@ router.post('/refresh-token', async (request, response) => {
             return response.status(401).json({ message: 'Token inválido' });
         }
 
-        if (!refreshTokenDecoded || !refreshTokenDecoded.exp)
-            return response.status(401).json({ message: 'Token inválido' });
-
-        const currentTime = Math.floor(Date.now() / 1000);
-        if (refreshTokenDecoded.exp < currentTime)
-            return response.status(401).json({ message: 'Token expirado' });
-
         const user = await User.findOne({ where: { id: refreshTokenDecoded.id } });
         if (!user)
             return response.status(404).json({ message: 'No existe usuario asociado' });
@@ -95,7 +88,7 @@ router.post('/refresh-token', async (request, response) => {
 
         const blacklistedSession = await SessionBlacklist.findOne({ where: { sessionId: session.id } });
         if (blacklistedSession)
-            return response.status(400).json({ message: 'Token inválido' });
+            return response.status(400).json({ message: 'Token utilizado' });
 
         const newAccessToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
         const newRefreshToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
