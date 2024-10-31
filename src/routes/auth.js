@@ -91,22 +91,9 @@ router.post('/refresh-token', async (request, response) => {
             return response.status(400).json({ message: 'Token utilizado' });
 
         const newAccessToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
-        const newRefreshToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
-
-        await SessionBlacklist.create({
-            sessionId: session.id,
-        });
-        // await session.destroy();
-
-        await Session.create({
-            userId: user.id,
-            token: newRefreshToken,
-            jti: uuidv4(),
-        });
 
         return response.status(201).json({ 
             accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
             message: 'Token renovado satisfactoriamente'
         });
     } catch (error) {
