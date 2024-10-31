@@ -84,7 +84,7 @@ router.post('/register', async (request, response) => {
             logger.error(`Error al enviar el correo: ${error.message}`);
         }
 
-        return response.status(201).json({ message: 'Usuario registrado exitosamente' });
+        return response.status(201).json({ message: 'Revisa tu correo electrónico' });
     } catch (error) {
         logger.error(`Error al registrar el usuario: ${error.message}`);
         return response.status(500).json({
