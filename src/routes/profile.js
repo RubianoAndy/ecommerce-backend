@@ -64,7 +64,9 @@ router.get('/profile', async (request, response) => {
             dni: profile.dni,
             prefix: profile.prefix,
             mobile: profile.mobile,
-            email: user.email
+            email: user.email,
+
+            message: 'Perfil cargado exitosamente',
         };
         
         return response.status(200).json(result);
