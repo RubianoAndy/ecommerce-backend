@@ -42,6 +42,7 @@ module.exports = (sequelize) => {
         User.hasOne(models.Profile, { foreignKey: 'userId' });
         User.hasMany(models.Session, { foreignKey: 'userId' });
         User.hasMany(models.PasswordResetCode, { foreignKey: 'userId' });
+        User.hasOne(models.UserActivation, { foreignKey: 'userId' });
     };
 
     return User;

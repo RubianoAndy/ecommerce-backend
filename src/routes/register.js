@@ -11,7 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
 require('dotenv').config();
 
-const { User, Profile } = require('../../models');
+const { User, Profile, UserActivation } = require('../../models');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -65,6 +65,12 @@ router.post('/register', async (request, response) => {
 
         const token = jwt.sign({ id:newUser.id, jti: uuidv4() }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
         const activateUrl = `${process.env.API_URL}/activate?token=${token}`;
+
+        await UserActivation.create({
+            userId: newUser.id,
+            token,
+            jti: uuidv4(),
+        })
 
         const filePath = path.join(__dirname, '../utils/email/activate-account.html');
 
