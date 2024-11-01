@@ -63,7 +63,7 @@ router.post('/register', async (request, response) => {
             userId: newUser.id
         });
 
-        const token = jwt.sign({ email, jti: uuidv4() }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
+        const token = jwt.sign({ id:newUser.id, jti: uuidv4() }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
         const activateUrl = `${process.env.API_URL}/activate?token=${token}`;
 
         const filePath = path.join(__dirname, '../utils/email/activate-account.html');
