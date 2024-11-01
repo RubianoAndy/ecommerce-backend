@@ -6,6 +6,8 @@ const validator = require('validator');
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
 require('dotenv').config();
 
@@ -61,7 +63,10 @@ router.post('/register', async (request, response) => {
             userId: newUser.id
         });
 
-        const filePath = path.join(__dirname, '../utils/email/register.html');
+        const token = jwt.sign({ email, jti: uuidv4() }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
+        const activateUrl = `${process.env.API_URL}/activate?token=${token}`;
+
+        const filePath = path.join(__dirname, '../utils/email/activate-account.html');
 
         try {
             const htmlContent = await fs.readFile(filePath, 'utf-8');
@@ -69,14 +74,15 @@ router.post('/register', async (request, response) => {
             const personalizedHtml = htmlContent
                 .replace('{{ name_1 }}', name_1)
                 .replace('{{ lastname_1 }}', lastname_1)
-                .replace('{{ email }}', email)
+                .replace('{{ activateUrl }}', activateUrl)
                 .replace('{{ apiURL }}', process.env.API_URL)
+                .replace('{{ support_email }}', process.env.SUPPORT_EMAIL)
                 .replace('{{ support_number }}', process.env.SUPPORT_WHATSAPP);
 
             const mailContent = {
                 // from: `"${name}" <${email}>`,
                 to: email,
-                subject: `¡Bienvenido(a) ${name_1}!`,
+                subject: '¡Activa tu cuenta!',
                 html: personalizedHtml
             };
 

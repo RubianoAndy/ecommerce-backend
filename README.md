@@ -102,9 +102,13 @@ DB_PASSWORD=Pa22w0rd
 # To generate the secrets randomly use this command
 # node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
 JWT_ACCESS_SECRET=8ffce1fbb5dd4600eae56c0e004ad818e05d90188281f334d053275dcd9aa415
-JWT_REFRESH_SECRET=2eb7f58ae77fec57c01b7d6698c421ab457253451640a354ff9620cf77a5fad6
 JWT_ACCESS_EXPIRATION=1h
+JWT_REFRESH_SECRET=2eb7f58ae77fec57c01b7d6698c421ab457253451640a354ff9620cf77a5fad6
 JWT_REFRESH_EXPIRATION=30d
+
+# JWT to activate account
+JWT_ACTIVATION_SECRET=a47393a08e69729ba36435dd59ba882001ba24946ea66639eeae9c5495846b76
+JWT_ACTIVATION_EXPIRATION=1h
 
 # To get HOST_PASSWORD, in Google account settings, look for App passwords (IMPORTANT ENABLE 2-STEP VERIFICATION)
 EMAIL_HOST=smtp.gmail.com
