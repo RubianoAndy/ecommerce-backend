@@ -87,6 +87,9 @@ router.post('/refresh-token', async (request, response) => {
         if (!session)
             return response.status(401).json({ message: 'No hay sesión iniciada' });
 
+        if (session.jti !== refreshTokenDecoded.jti)
+            return response.status(401).json({ message: 'Token manipulado' });
+
         const blacklistedSession = await SessionBlacklist.findOne({ where: { sessionId: session.id } });
         if (blacklistedSession)
             return response.status(400).json({ message: 'Token utilizado' });
