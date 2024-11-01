@@ -107,4 +107,51 @@ router.post('/register', async (request, response) => {
     }
 });
 
+router.post('/activate', async (request, response) => {
+    const { token } = request.body;
+
+    try {
+        if (!token)
+            return response.status(401).json({ message: 'Token no proporcionado' });
+
+        let tokenDecoded = null;
+        try {
+            tokenDecoded = jwt.verify(refreshToken, process.env.JWT_ACTIVATION_SECRET);
+        } catch (error) {
+            logger.error(`Error al verificar el refresh token: ${error.message}`);
+            return response.status(401).json({ message: 'Token inválido' });
+        }
+
+        const activationRecord = await UserActivation.findOne({ where: { token } });
+        if (!activationRecord)
+            return response.status(401).json({ message: 'No existe un token de activación' });
+
+        if (activationRecord.jti !== tokenDecoded.jti)
+            return response.status(401).json({ message: 'Token manipulado' });
+
+        if (activationRecord.userId !== tokenDecoded.id)
+            return response.status(401).json({ message: 'El token de activación no coincide con el usuario solicitado' });
+
+        const user = await User.findOne({ where: { id: tokenDecoded.id } });
+        if (!user)
+            return response.status(404).json({ message: 'No existe usuario asociado' });
+        
+        if (user.activated)
+            return response.status(403).json({ message: 'El usuario ya está activado' });
+
+        await User.update(
+            { activated: true },
+            { where : {id: tokenDecoded.id} },
+        );
+        
+        return response.status(201).json({ message: 'Cuenta activada satisfactoriamente' });
+    } catch (error) {
+        logger.error(`Error al renovar token: ${error.message}`);
+        return response.status(500).json({ 
+            message: 'Error al renovar token',
+            details: error.message,
+        });
+    }
+});
+
 module.exports = router;
