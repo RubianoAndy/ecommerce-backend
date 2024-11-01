@@ -37,13 +37,14 @@ router.post('/sign-in', async (request, response) => {
         if (!passwordValid)
             return response.status(401).json({ message: 'Credenciales inválidas' });
 
-        const accessToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
-        const refreshToken = jwt.sign({ id: user.id, jti: uuidv4() }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        const jti = uuidv4();
+        const accessToken = jwt.sign({ id: user.id, jti: jti }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
+        const refreshToken = jwt.sign({ id: user.id, jti: jti }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
         await Session.create({
             userId: user.id,
             token: refreshToken,
-            jti: uuidv4(),
+            jti,
         });
 
         return response.status(200).json({
