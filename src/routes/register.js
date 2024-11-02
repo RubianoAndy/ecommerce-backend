@@ -63,13 +63,14 @@ router.post('/register', async (request, response) => {
             userId: newUser.id
         });
 
-        const token = jwt.sign({ id:newUser.id, jti: uuidv4() }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
+        const jti = uuidv4();
+        const token = jwt.sign({ id: newUser.id, jti: jti }, process.env.JWT_ACTIVATION_SECRET, { expiresIn: process.env.JWT_ACTIVATION_EXPIRATION });
         const activateUrl = `${process.env.API_URL}/activate?token=${token}`;
 
         await UserActivation.create({
             userId: newUser.id,
             token,
-            jti: uuidv4(),
+            jti,
         })
 
         const filePath = path.join(__dirname, '../utils/email/activate-account.html');
@@ -112,14 +113,14 @@ router.post('/activate', async (request, response) => {
 
     try {
         if (!token)
-            return response.status(401).json({ message: 'Token no proporcionado' });
+            return response.status(401).json({ message: 'Enlace de activación inválido' });
 
         let tokenDecoded = null;
         try {
-            tokenDecoded = jwt.verify(refreshToken, process.env.JWT_ACTIVATION_SECRET);
+            tokenDecoded = jwt.verify(token, process.env.JWT_ACTIVATION_SECRET);
         } catch (error) {
-            logger.error(`Error al verificar el refresh token: ${error.message}`);
-            return response.status(401).json({ message: 'Token inválido' });
+            logger.error(`Error al verificar el token: ${error.message}`);
+            return response.status(401).json({ message: 'Link inválido' });
         }
 
         const activationRecord = await UserActivation.findOne({ where: { token } });
@@ -129,7 +130,7 @@ router.post('/activate', async (request, response) => {
         if (activationRecord.jti !== tokenDecoded.jti)
             return response.status(401).json({ message: 'Token manipulado' });
 
-        if (activationRecord.userId !== tokenDecoded.id)
+        if (activationRecord.userId != tokenDecoded.id)
             return response.status(401).json({ message: 'El token de activación no coincide con el usuario solicitado' });
 
         const user = await User.findOne({ where: { id: tokenDecoded.id } });
@@ -143,6 +144,8 @@ router.post('/activate', async (request, response) => {
             { activated: true },
             { where : {id: tokenDecoded.id} },
         );
+
+        await UserActivation.destroy({ where: { userId: user.id } });
         
         return response.status(201).json({ message: 'Cuenta activada satisfactoriamente' });
     } catch (error) {
