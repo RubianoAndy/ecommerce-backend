@@ -141,12 +141,39 @@ router.post('/activate', async (request, response) => {
         if (user.activated)
             return response.status(403).json({ message: 'El usuario ya está activado' });
 
+        const profile = await Profile.findOne({ where: { userId: user.id } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
+
         await User.update(
             { activated: true },
             { where : {id: tokenDecoded.id} },
         );
 
         await UserActivation.destroy({ where: { userId: user.id } });
+
+        const filePath = path.join(__dirname, '../utils/email/welcome-account.html');
+
+        try {
+            const htmlContent = await fs.readFile(filePath, 'utf-8');
+
+            const personalizedHtml = htmlContent
+                .replace('{{ name_1 }}', profile.name_1)
+                .replace('{{ lastname_1 }}', profile.lastname_1)
+                .replace('{{ apiURL }}', process.env.API_URL)
+                .replace('{{ email }}', user.email);
+
+            const mailContent = {
+                // from: `"${name}" <${email}>`,
+                to: user.email,
+                subject: '¡Bienvenido(a)!',
+                html: personalizedHtml
+            };
+
+            await transporter.sendMail(mailContent);
+        } catch (error) {
+            logger.error(`Error al enviar el correo: ${error.message}`);
+        }
         
         return response.status(201).json({ message: 'Cuenta activada satisfactoriamente' });
     } catch (error) {
