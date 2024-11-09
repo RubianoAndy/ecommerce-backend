@@ -26,9 +26,9 @@ module.exports = (sequelize) => {
                 model: 'users',
                 key: 'id'
             },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        allowNull: false
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE',
+            allowNull: false
         },
         token: {
             type: DataTypes.TEXT,
