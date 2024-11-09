@@ -3,7 +3,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    const User = sequelize.define('User', {
+    const Role = sequelize.define('Role', {
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -24,38 +24,20 @@ module.exports = (sequelize) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
-        email: {
+        name: {
             type: DataTypes.STRING(100),
             unique: true,
             allowNull: false,
         },
-        password: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-        roleId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'roles',
-                key: 'id'
-            },
-            onUpdate: 'CASCADE',
-            onDelete: 'CASCADE',
-            allowNull: false
-        },
     }, {
-        tableName: 'users',
+        tableName: 'roles',
         timestamps: true,
+        paranoid: true, // Habilita soft deletes de forma automática
     });
 
-    User.associate = (models) => {
-        User.hasOne(models.Profile, { foreignKey: 'userId' });
-        User.hasMany(models.Session, { foreignKey: 'userId' });
-        User.hasMany(models.PasswordResetCode, { foreignKey: 'userId' });
-        User.hasOne(models.UserActivation, { foreignKey: 'userId' });
-
-        User.belongsTo(models.Role, { foreignKey: 'roleId' });
+    Role.associate = (models) => {
+        Role.hasMany(models.User, { foreignKey: 'roleId' });
     };
 
-    return User;
+    return Role;
 };
