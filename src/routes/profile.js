@@ -6,6 +6,7 @@ const winston = require('winston');
 require('dotenv').config();
 
 const { User, Profile } = require('../../models');
+const { where } = require('sequelize');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -36,9 +37,9 @@ router.get('/profile', async (request, response) => {
         return response.status(401).json({ message: 'Token de acceso inválido' });
     }
 
-    const currentTime = Math.floor(Date.now() / 1000);
-    if (accessTokenDecoded.exp < currentTime)
-        return response.status(401).json({ message: 'Token de acceso expirado' });
+    // const currentTime = Math.floor(Date.now() / 1000);
+    // if (accessTokenDecoded.exp < currentTime)
+    //     return response.status(401).json({ message: 'Token de acceso expirado' });
 
     const userId = accessTokenDecoded.id;
     
@@ -65,6 +66,7 @@ router.get('/profile', async (request, response) => {
             prefix: profile.prefix,
             mobile: profile.mobile,
             email: user.email,
+            roleId: user.roleId,
 
             message: 'Perfil cargado exitosamente',
         };
