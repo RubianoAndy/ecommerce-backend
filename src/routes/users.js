@@ -48,7 +48,8 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN, ADMIN ]), asyn
         const users = await User.findAll({
             attributes: [
                 'id',
-                'email', // Si necesitas el email
+                'email',
+                'activated',
 
                 [Sequelize.col('Profile.name_1'), 'name_1'],
                 [Sequelize.col('Profile.name_2'), 'name_2'],
@@ -72,6 +73,9 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN, ADMIN ]), asyn
                     required: false,    // Esto hace que sea un LEFT JOIN (opcional)
                     attributes: []      // No se duplican los atributos, solo se seleccionan arriba
                 },
+            ],
+            order: [
+                ['id', 'DESC']
             ]
         });
 
