@@ -6,7 +6,7 @@ const winston = require('winston');
 require('dotenv').config();
 
 const { User, Profile } = require('../../models');
-const { where } = require('sequelize');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -21,27 +21,8 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-router.get('/profile', async (request, response) => {
-    const authHeader = request.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer '))
-        return response.status(401).json({ message: 'Token de acceso no proporcionado' });
-
-    const accessToken = authHeader.split(' ')[1];
-
-    let accessTokenDecoded;
-    try {
-        accessTokenDecoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
-    } catch (error) {
-        logger.error(`Error al verificar el access token: ${error.message}`);
-        return response.status(401).json({ message: 'Token de acceso inválido' });
-    }
-
-    // const currentTime = Math.floor(Date.now() / 1000);
-    // if (accessTokenDecoded.exp < currentTime)
-    //     return response.status(401).json({ message: 'Token de acceso expirado' });
-
-    const userId = accessTokenDecoded.id;
+router.get('/profile', authMiddleware, async (request, response) => {
+    const userId = request.accessTokenDecoded.id;       // Se decodifica en el authMiddleware
     
     try {
         const user = await User.findOne({ where: { id: userId } });
