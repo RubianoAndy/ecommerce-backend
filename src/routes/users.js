@@ -39,7 +39,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN, ADMIN ]), asyn
         filters.forEach(filter => {
             if (filter.field && filter.value !== undefined) {
                 if (filter.field === 'name' || filter.field === 'email')
-                    filterConditions[filter.field] = { [Sequelize.like]: `%${filter.value}%` };
+                    filterConditions[filter.field] = { [Sequelize.Op.like]: `%${filter.value}%` };
                 else
                     filterConditions[filter.field] = filter.value;  // Otros filtros directos (como roleId, activated)
             }
