@@ -6,7 +6,7 @@ const winston = require('winston');
 require('dotenv').config();
 
 const { User, Profile } = require('../../models');
-const authMiddleware = require('../middlewares/auth.middleware');
+const authMiddleware = require('../middlewares/auth-middleware');
 
 const logger = winston.createLogger({
     level: 'error',
