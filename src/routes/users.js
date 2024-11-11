@@ -50,6 +50,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN, ADMIN ]), asyn
                 'id',
                 'email',
                 'activated',
+                'createdAt',
 
                 [Sequelize.col('Profile.name_1'), 'name_1'],
                 [Sequelize.col('Profile.name_2'), 'name_2'],
@@ -88,7 +89,9 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN, ADMIN ]), asyn
             page: page,
             pageSize: pageSize,
             totalPages: totalPages,
-            totalUsers: totalUsers
+            totalUsers: totalUsers,
+
+            message: '¡Usuarios cargados exitosamente!'
         });
     } catch (error) {
         logger.error(`Error al obtener usuarios: ${error.message}`);
