@@ -125,6 +125,11 @@ EMAIL_USE_TLS=True
 EMAIL_USE_SSL=False
 EMAIL_HOST_USER=email@gmail.com
 EMAIL_HOST_PASSWORD=<HOST-PASSWORD>
+
+# Roles
+SUPER_ADMIN=1
+ADMIN=2
+CUSTOMER=3
 ```
 
 ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
