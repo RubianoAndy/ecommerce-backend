@@ -20,10 +20,6 @@ module.exports = (sequelize) => {
             allowNull: false,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
-        activated: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
         name: {
             type: DataTypes.STRING(100),
             unique: true,
