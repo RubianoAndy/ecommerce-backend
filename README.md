@@ -58,6 +58,11 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | validator    | 13.12.0 |
 | winston      | 3.14.2  |
 
+| Dev dependency   | Version |
+| ---------------- | :------ |
+| nodemon          | 3.1.7   |
+| sequelize-cli    | 6.6.2   |
+
 ## How to create a project in express?
 
 For documentation purposes, this repository was created as follows:
@@ -72,15 +77,18 @@ For documentation purposes, this repository was created as follows:
 | 6-  | Create .env file (more information below)   | N/A                                    |
 | 7-  | Create server.js file                       | N/A                                    |
 | 8-  | Install cors                                | `npm install cors`                     |
-| 9-  | Install sequelize and postgreSQL database   | `npm install sequelize pg pg-hstore`   |
-| 10- | Install sequelize cli                       | `npm install --save-dev sequelize-cli` |
-| 11- | Init sequelize                              | `npx sequelize-cli init`               |
-| 12- | Install bcrypt to hass the passwords        | `npm install bcrypt`                   |
-| 13- | Install JWT                                 | `npm install jsonwebtoken`             |
-| 14- | Install JTI for JWT                         | `npm install uuid`                     |
-| 15- | Install Winston for error.log file          | `npm install winston`                  |
-| 16- | Install nodemailer for send emails          | `npm install nodemailer`               |
-| 17- | Install validator to validate fields        | `npm install validator`                |
+| 9-  | Install nodemon                             | `npm install --save-dev nodemon`       |
+| 10- | Put in package.json, scripts section        | `"start": "nodemon server.js",`        |
+| 11- | Install sequelize and postgreSQL database   | `npm install sequelize pg pg-hstore`   |
+| 12- | Install sequelize cli                       | `npm install --save-dev sequelize-cli` |
+| 13- | Init sequelize                              | `npx sequelize-cli init`               |
+| 14- | Install bcrypt to hass the passwords        | `npm install bcrypt`                   |
+| 15- | Install JWT                                 | `npm install jsonwebtoken`             |
+| 16- | Install JTI for JWT                         | `npm install uuid`                     |
+| 17- | Install Winston for error.log file          | `npm install winston`                  |
+| 18- | Install nodemailer for send emails          | `npm install nodemailer`               |
+| 19- | Install validator to validate fields        | `npm install validator`                |
+| 20- | Deploy the proyect                          | `npm run`                              |
 
 ### Parameters for the .env file
 
