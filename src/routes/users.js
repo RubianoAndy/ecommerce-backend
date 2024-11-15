@@ -33,31 +33,45 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
 
         const offset = (page - 1) * pageSize;
 
-        const filters = request.query.filters ? JSON.parse(request.query.filters) : [];
-        const filterConditions = {};
+        let filters = [];
+        try {
+            filters = request.query.filters ? JSON.parse(request.query.filters) : [];
+        } catch (error) {
+            logger.error(`Error en el formato de los filtros: ${error.message}`);
+            return response.status(400).json({ message: 'Error en el formato de los filtros' });
+        }
+
+        let filterConditions = {};
+        let profileConditions = null;
 
         filters.forEach(filter => {
             if (filter.field && filter.value !== undefined) {
-                if (filter.field === 'name' || filter.field === 'email')
-                    filterConditions[filter.field] = { [Sequelize.Op.like]: `%${filter.value}%` };
-                else
-                    filterConditions[filter.field] = filter.value;  // Otros filtros directos (como roleId, activated)
+                if (filter.field === 'name') {
+                    const searchTerm = filter.value.toLowerCase().trim();
+                    
+                    if (searchTerm.length > 0) {
+                        profileConditions = {
+                            [Sequelize.Op.or]: [
+                                {name_1: { [Sequelize.Op.iLike]: `%${searchTerm}%` }},
+                                {name_2: { [Sequelize.Op.iLike]: `%${searchTerm}%` }},
+                                {lastname_1: { [Sequelize.Op.iLike]: `%${searchTerm}%` }},
+                                {lastname_2: { [Sequelize.Op.iLike]: `%${searchTerm}%` }}
+                            ]
+                        };
+                    }
+                } else {
+                    filterConditions[filter.field] = filter.value;
+                }
             }
         });
 
-        const users = await User.findAll({
+        const queryOptions = {
             attributes: [
                 'id',
                 'email',
                 'activated',
                 'createdAt',
-
-                [Sequelize.col('Profile.name_1'), 'name_1'],
-                [Sequelize.col('Profile.name_2'), 'name_2'],
-                [Sequelize.col('Profile.lastname_1'), 'lastname_1'],
-                [Sequelize.col('Profile.lastname_2'), 'lastname_2'],
-                [Sequelize.col('Profile.dni'), 'dni'],
-                [Sequelize.col('Profile.dniType'), 'dniType'],
+                
                 [Sequelize.col('Role.name'), 'role']
             ],
             where: filterConditions,
@@ -66,21 +80,35 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
             include: [
                 {
                     model: Profile,
-                    required: false,    // Esto hace que sea un LEFT JOIN (opcional)
-                    attributes: []      // No se duplican los atributos, solo se seleccionan arriba
+                    required: true,     // true para hacer un INNER JOIN
+                    where: profileConditions,
+                    attributes: [
+                        'name_1', 'name_2', 'lastname_1', 'lastname_2', 'dni', 'dniType'
+                    ],
                 },
                 {
                     model: Role,
-                    required: false,    // Esto hace que sea un LEFT JOIN (opcional)
-                    attributes: []      // No se duplican los atributos, solo se seleccionan arriba
-                },
+                    required: false,     // false para hacer un LEFT JOIN
+                    attributes: []
+                }
             ],
             order: [
                 ['id', 'DESC']
             ]
-        });
+        };
 
-        const totalUsers = await User.count({ where: filterConditions });
+        const users = await User.findAll(queryOptions);
+
+        const totalUsers = await User.count({
+            where: filterConditions,
+            include: [
+                {
+                    model: Profile,
+                    required: true, // true para hacer un INNER JOIN
+                    where: profileConditions
+                }
+            ]
+        });
 
         const totalPages = Math.ceil(totalUsers / pageSize);
 
@@ -90,9 +118,9 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
             pageSize: pageSize,
             totalPages: totalPages,
             totalUsers: totalUsers,
-
             message: '¡Usuarios cargados exitosamente!'
         });
+
     } catch (error) {
         logger.error(`Error al obtener usuarios: ${error.message}`);
         return response.status(500).json({ message: 'Error al obtener usuarios', details: error.message });
