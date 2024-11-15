@@ -3,15 +3,15 @@
 const express = require('express');
 const winston = require('winston');
 require('dotenv').config();
-const { Sequelize, where } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 const { User, Profile, Role, UserActivation } = require('../../models');
 
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
 
-const SUPERADMIN = 1;
-const ADMIN = 2;
+const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
+// const ADMIN = Number(process.env.ADMIN);
 
 const logger = winston.createLogger({
     level: 'error',
@@ -26,7 +26,7 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN ]), async (request, response) => {
+router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     try {
         const page = parseInt(request.query.page) || 1;
         const pageSize = parseInt(request.query.pageSize) || 10;
@@ -99,7 +99,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPERADMIN ]), async (requ
     }
 });
 
-router.patch('/update-user-status', authMiddleware, roleMiddleware([ SUPERADMIN ]), async (request, response) => {
+router.patch('/update-user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     const { userId, activated } = request.body;
     
     if (!userId || activated === undefined || activated === null)
