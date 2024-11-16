@@ -42,7 +42,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
         }
 
         let filterConditions = {};
-        let profileConditions = null;
+        let profileConditions = {};
 
         filters.forEach(filter => {
             if (filter.field && filter.value !== undefined) {
@@ -59,8 +59,15 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
                             ]
                         };
                     }
+                } else if (filter.field == 'email') {
+                    filterConditions.email = { [Sequelize.Op.iLike]: `%${filter.value}%` };
+                } else if (filter.field === 'dni') {
+                    if (filter.value === null)
+                        profileConditions.dni = null;
+                    else
+                        profileConditions.dni = { [Sequelize.Op.like]: `%${filter.value}%` };
                 } else {
-                    filterConditions[filter.field] = filter.value;
+                    filterConditions[filter.field] = filter.value;  // Filtros exactos en users, como role y activated
                 }
             }
         });
@@ -71,7 +78,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
                 'email',
                 'activated',
                 'createdAt',
-                
+
                 [Sequelize.col('Role.name'), 'role']
             ],
             where: filterConditions,
