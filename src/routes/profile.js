@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const winston = require('winston');
 require('dotenv').config();
 
