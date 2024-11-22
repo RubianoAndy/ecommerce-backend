@@ -41,7 +41,7 @@
 # Ecommerce backend
 
 This project was generated with [Node.js](https://nodejs.org/en) 22.11.0, [NPM](https://nodejs.org/en) version 10.9.0 
-and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 16.4 and its dependencies are:
+and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 17.2-1 and its dependencies are:
 
 | Dependency   | Version |
 | ------------ | :------ |
