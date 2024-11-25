@@ -24,7 +24,7 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-router.get('/all-roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+router.get('/roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     try {
         const roles = await Role.findAll({ attributes: ['id', 'name'] });       // Ignora los que tienen deleteAt diferente de null
         
