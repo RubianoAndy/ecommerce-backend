@@ -96,7 +96,10 @@ router.delete('/delete-role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADM
         if (!role)
             return response.status(404).json({ message: 'Rol no encontrado' });
 
-        // role.deleteAt = new Date();
+        if (role.deletedAt)
+            return response.status(403).json({ message: 'El rol ya había sido eliminado' });
+        
+        // role.deletedAt = new Date();
         // await role.save();
 
         await role.destroy();       // No destruye el registro si el modelo tiene paranoid en true (soft delete)
