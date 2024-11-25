@@ -3,6 +3,8 @@
 const express = require('express');
 const winston = require('winston');
 require('dotenv').config();
+const { Sequelize } = require('sequelize');
+
 const { Role } = require('../../models');
 
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -31,7 +33,7 @@ router.get('/roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
 
         const offset = (page - 1) * pageSize;
 
-        let filters = [];
+        let filters = {};
 
         try {
             filters = request.query.filters ? JSON.parse(request.query.filters) : [];
@@ -41,6 +43,23 @@ router.get('/roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
         }
 
         let filterConditions = {};
+
+        filters.forEach(filter => {
+            if (filter.field && filter.value !== undefined) {
+                if (filter.field === 'id') {
+                    const id = parseInt(filter.value, 10);
+                    if (!isNaN(id))
+                        filterConditions.id = { [Sequelize.Op.eq]: id };
+                    else {
+                        logger.error(`Valor no válido para id: ${filter.value}`);
+                        return response.status(400).json({ message: 'El valor del ID debe ser un número' });
+                    }
+                } else if (filter.field === 'name') {
+                    const searchTerm = filter.value.toLowerCase().trim();
+                    filterConditions.name = { [Sequelize.Op.iLike]: `%${searchTerm}%` };
+                }
+            }
+        });
 
         const query = {
             attributes: [
