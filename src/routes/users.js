@@ -72,7 +72,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
             }
         });
 
-        const queryOptions = {
+        const query = {
             attributes: [
                 'id',
                 'email',
@@ -104,7 +104,7 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
             ]
         };
 
-        const users = await User.findAll(queryOptions);
+        const users = await User.findAll(query);
 
         const totalUsers = await User.count({
             where: filterConditions,
