@@ -148,14 +148,10 @@ router.patch('/update-user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN
         if (!user)
             return response.status(404).json({ message: 'No existe usuario asociado' });
 
-        await Promise.all([
-            UserActivation.destroy({ where: { userId: userId } }),
+        await UserActivation.destroy({ where: { userId: userId } }),
 
-            User.update(
-                { activated: activated },
-                { where : {id: userId} },
-            )
-        ]);
+        user.activated = activated;
+        await user.save();
     
         return response.status(200).json({ message: 'Estado de usuario actualizado satisfactoriamente' });
     } catch (error) {

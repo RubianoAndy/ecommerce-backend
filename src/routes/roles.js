@@ -84,6 +84,34 @@ router.get('/roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
     }
 });
 
+router.delete('/delete-role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const { roleId } = request.params;
+
+    if (!roleId)
+        return response.status(400).json({ message: 'No se ha proporcionado un rol' });
+
+    try {
+        const role = await Role.findOne( { where : { id: roleId }});
+
+        if (!role)
+            return response.status(404).json({ message: 'Rol no encontrado' });
+
+        // role.deleteAt = new Date();
+        // await role.save();
+
+        await role.destroy();       // No destruye el registro si el modelo tiene paranoid en true (soft delete)
+
+        return response.status(200).json({ message: 'Rol eliminado correctamente' });
+
+    } catch (error) {
+        logger.error(`Error al eliminar el rol: ${error.message}`);
+        return response.status(500).json({ 
+            message: 'Error al eliminar el rol',
+            details: error.message,
+        });
+    }
+});
+
 router.get('/roles-small', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     try {
         const roles = await Role.findAll({ attributes: ['id', 'name'] });       // Ignora los que tienen deleteAt diferente de null
