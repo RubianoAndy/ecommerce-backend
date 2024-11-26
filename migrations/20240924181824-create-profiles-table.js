@@ -47,7 +47,7 @@ module.exports = {
         allowNull: true
       },
       dniType: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(30),
         allowNull: true
       },
       dni: {
