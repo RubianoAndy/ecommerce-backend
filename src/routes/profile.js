@@ -91,11 +91,16 @@ router.put('/update-profile', authMiddleware, async (request, response) => {
         if (dni)
             profile.dni = dni;
 
+        // Estos son campos opcionales, por eso se coloca el else
         if (name_2)
             profile.name_2 = name_2;
+        else
+            profile.name_2 = null;
         
         if (lastname_2)
             profile.lastname_2 = lastname_2;
+        else
+            profile.lastname_2 = null;
 
         await profile.save();
 
@@ -182,9 +187,13 @@ router.put('/update-profile/:userId', authMiddleware, roleMiddleware([ SUPER_ADM
 
         if (name_2)
             profile.name_2 = name_2;
+        else
+            profile.name_2 = null;
         
         if (lastname_2)
             profile.lastname_2 = lastname_2;
+        else
+            profile.lastname_2 = null;
 
         await Promise.all([
             profile.save(),
