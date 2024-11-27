@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const winston = require('winston');
 require('dotenv').config();
 
-const { User } = require('../../models');
+const { User, Profile } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
 
 const logger = winston.createLogger({
@@ -51,6 +51,10 @@ router.patch('/change-password', authMiddleware, async (request, response) => {
 
         if (!user.activated)
             return response.status(403).json({ message: 'El usuario no está activo' });
+
+        const profile = await Profile.findOne({ where: { userId } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
 
         const currentPasswordMatch = await bcrypt.compare(currentPassword, user.password);
         if (!currentPasswordMatch)
