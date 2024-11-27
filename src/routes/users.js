@@ -136,35 +136,6 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
     }
 });
 
-router.patch('/update-user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
-    const { userId, activated } = request.body;
-    
-    if (!userId || activated === undefined || activated === null)
-        return response.status(400).json({ message: 'Todos los campos son obligatorios' });
-
-    if (typeof activated !== 'boolean')
-        return response.status(400).json({ message: 'El campo "activated" debe ser un valor booleano' });
-
-    try {
-        const user = await User.findOne({ where: { id: userId }});
-        if (!user)
-            return response.status(404).json({ message: 'No existe usuario asociado' });
-
-        await UserActivation.destroy({ where: { userId: userId } }),
-
-        user.activated = activated;
-        await user.save();
-    
-        return response.status(200).json({ message: 'Estado de usuario actualizado satisfactoriamente' });
-    } catch (error) {
-        logger.error(`Error al actualizar estado del usuario: ${error.message}`);
-        return response.status(500).json({ 
-            message: 'Error al actualizar estado del usuario',
-            details: error.message,
-        });
-    }
-});
-
 router.post('/user', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     const { name_1, name_2, lastname_1, lastname_2, dniType, dni, prefix, mobile, email, password, roleId } = request.body;
     if (!name_1 || !lastname_1 || !dniType || !dni || !prefix || !mobile || !email || !password || !roleId)
@@ -246,6 +217,35 @@ router.get('/user/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
     } catch (error) {
         logger.error(`Error al obtener el usuario: ${error.message}`);
         return response.status(500).json({ message: 'Error al obtener el usuario', details: error.message });
+    }
+});
+
+router.patch('/update-user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const { userId, activated } = request.body;
+    
+    if (!userId || activated === undefined || activated === null)
+        return response.status(400).json({ message: 'Todos los campos son obligatorios' });
+
+    if (typeof activated !== 'boolean')
+        return response.status(400).json({ message: 'El campo "activated" debe ser un valor booleano' });
+
+    try {
+        const user = await User.findOne({ where: { id: userId }});
+        if (!user)
+            return response.status(404).json({ message: 'No existe usuario asociado' });
+
+        await UserActivation.destroy({ where: { userId: userId } }),
+
+        user.activated = activated;
+        await user.save();
+    
+        return response.status(200).json({ message: 'Estado de usuario actualizado satisfactoriamente' });
+    } catch (error) {
+        logger.error(`Error al actualizar estado del usuario: ${error.message}`);
+        return response.status(500).json({ 
+            message: 'Error al actualizar estado del usuario',
+            details: error.message,
+        });
     }
 });
 
