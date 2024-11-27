@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 
 const registerRequests = require('./src/routes/register');
 const authRequests = require('./src/routes/auth');
-const forgotPasswordRequests = require('./src/routes/forgot-password')
+const forgotPasswordRequests = require('./src/routes/forgot-password');
+const changePasswordRequests = require('./src/routes/change-password');
 const profileRequests = require('./src/routes/profile');
 const usersRequests = require('./src/routes/users');
 const rolesRequests = require('./src/routes/roles');
@@ -30,6 +31,7 @@ app.use(bodyParser.json());
 
 app.use('', registerRequests);
 app.use('', forgotPasswordRequests);
+app.use('', changePasswordRequests);
 app.use('', authRequests);
 app.use('', profileRequests);
 
