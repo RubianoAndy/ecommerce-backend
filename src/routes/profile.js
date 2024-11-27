@@ -3,6 +3,7 @@
 const express = require('express');
 const winston = require('winston');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const { User, Profile } = require('../../models');
@@ -50,7 +51,6 @@ router.get('/profile', authMiddleware, async (request, response) => {
             prefix: profile.prefix,
             mobile: profile.mobile,
             email: user.email,
-            // roleId: user.roleId,
 
             message: 'Perfil cargado exitosamente',
         };
@@ -85,6 +85,7 @@ router.put('/update-profile', authMiddleware, async (request, response) => {
         profile.prefix = prefix;
         profile.mobile = mobile;
 
+        // Son obligatorios pero con disable en el formulario
         if(dniType)
             profile.dniType = dniType;
         
@@ -140,7 +141,7 @@ router.get('/profile/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), 
             prefix: profile.prefix,
             mobile: profile.mobile,
             email: user.email,
-            // roleId: user.roleId,
+            roleId: user.roleId,
 
             message: 'Perfil cargado exitosamente',
         };
@@ -157,8 +158,8 @@ router.put('/update-profile/:userId', authMiddleware, roleMiddleware([ SUPER_ADM
     if (isNaN(userId) || userId <= 0)
         return response.status(400).json({ message: 'ID de usuario inválido' });
 
-    const { name_1, name_2, lastname_1, lastname_2, dniType, dni, prefix, mobile, email } = request.body;
-    if (!name_1 || !lastname_1 || !dniType || !dni || !prefix || !mobile || !email)
+    const { name_1, name_2, lastname_1, lastname_2, dniType, dni, prefix, mobile, email, password, roleId } = request.body;
+    if (!name_1 || !lastname_1 || !dniType || !dni || !prefix || !mobile || !email || !roleId)
         return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
 
     if (!validator.isEmail(email))
@@ -175,6 +176,15 @@ router.put('/update-profile/:userId', authMiddleware, roleMiddleware([ SUPER_ADM
         const profile = await Profile.findOne({ where: { userId } });
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
+
+        if (password) {
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (passwordMatch)
+                return response.status(400).json({ message: 'La contraseña es igual a la anterior' });
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.password = hashedPassword;
+        }
 
         profile.name_1 = name_1;
         profile.lastname_1 = lastname_1;
@@ -206,6 +216,50 @@ router.put('/update-profile/:userId', authMiddleware, roleMiddleware([ SUPER_ADM
     } catch (error) {
         logger.error(`Error al actualizar la información del perfil: ${error.message}`);
         return response.status(500).json({ message: 'Error al actualizar la información del perfil', details: error.message });
+    }
+});
+
+router.post('/profile', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const { name_1, name_2, lastname_1, lastname_2, dniType, dni, prefix, mobile, email, password, roleId } = request.body;
+    if (!name_1 || !lastname_1 || !dniType || !dni || !prefix || !mobile || !email || !password || !roleId)
+        return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
+
+    if (!validator.isEmail(email))
+        return response.status(400).json({ message: 'El formato del correo electrónico no es válido' });
+
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (user)
+            return response.status(400).json({ message: 'El usuario ya existe' });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await User.create({
+            email,
+            password: hashedPassword,
+            roleId,
+            activated: true,
+        });
+
+        await Profile.create({
+            name_1,
+            name_2,
+            lastname_1,
+            lastname_2,
+            dniType,
+            dni,
+            prefix,
+            mobile,
+            userId: newUser.id
+        });
+
+        return response.status(201).json({ message: 'Usuario creado satisfactoriamente' });
+    } catch (error) {
+        logger.error(`Error al crear el usuario: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al crear el usuario',
+            details: error.message,
+        });
     }
 });
 
