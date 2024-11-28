@@ -48,6 +48,7 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | bcrypt       | 5.1.1   |
 | cors         | 2.8.5   |
 | dotenv       | 16.4.5  |
+| exceljs      | 4.4.0   |
 | express      | 4.21.0  |
 | jsonwebtoken | 9.0.2   |
 | nodemailer   | 6.9.15  |
@@ -88,7 +89,8 @@ For documentation purposes, this repository was created as follows:
 | 17- | Install Winston for error.log file          | `npm install winston`                  |
 | 18- | Install nodemailer for send emails          | `npm install nodemailer`               |
 | 19- | Install validator to validate fields        | `npm install validator`                |
-| 20- | Deploy the proyect                          | `npm run`                              |
+| 20- | Install exceljs to genere xlsx reports      | `npm install exceljs`                  |
+| 21- | Deploy the proyect                          | `npm run`                              |
 
 ### Parameters for the .env file
 
