@@ -5,6 +5,7 @@ const winston = require('winston');
 const validator = require('validator');
 const { Sequelize } = require('sequelize');
 const bcrypt = require('bcrypt');
+const ExcelJS = require('exceljs');
 require('dotenv').config();
 
 const { User, Profile, Role, UserActivation } = require('../../models');
@@ -312,6 +313,85 @@ router.put('/update-user/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN 
     } catch (error) {
         logger.error(`Error al actualizar la información del usuario: ${error.message}`);
         return response.status(500).json({ message: 'Error al actualizar la información del usuario', details: error.message });
+    }
+});
+
+router.get('/users/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    try {
+        const users = await User.findAll({
+            include: [
+                {
+                    model: Profile,
+                    required: true, // INNER JOIN
+                    attributes: [
+                        'id',
+                        'name_1',
+                        'name_2',
+                        'lastname_1',
+                        'lastname_2',
+                        'dni',
+                        'dniType',
+                        'prefix',
+                        'mobile'
+                    ],
+                },
+                {
+                    model: Role,
+                    required: false, // LEFT JOIN
+                    attributes: ['name']
+                }
+            ],
+            order: [['id', 'DESC']]
+        });
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Usuarios');
+
+        worksheet.columns = [
+            { header: 'Usuario ID', key: 'userId', width: 15 },
+            { header: 'Perfil ID', key: 'profileId', width: 15 },
+            { header: 'Rol', key: 'role', width: 20 },
+            { header: 'Estado', key: 'activated', width: 10 },
+            { header: 'Fecha de creación', key: 'createdAt', width: 20 },
+            { header: 'Apellido 1', key: 'lastname_1', width: 20 },
+            { header: 'Apellido 2', key: 'lastname_2', width: 20 },
+            { header: 'Nombre 1', key: 'name_1', width: 20 },
+            { header: 'Nombre 2', key: 'name_2', width: 20 },
+            { header: 'Tipo DNI', key: 'dniType', width: 30 },
+            { header: 'DNI', key: 'dni', width: 15 },
+            { header: 'Email', key: 'email', width: 30 },
+            { header: 'Prefijo', key: 'prefix', width: 10 },
+            { header: 'Celular', key: 'mobile', width: 15 },
+        ];
+
+        users.forEach(user => {
+            const profile = user.Profile;
+
+            worksheet.addRow({
+                userId: user.id,
+                profileId: profile.id,
+                role: user.Role ? user.Role.name : '',
+                activated: user.activated ? 'Activo' : 'Inactivo',
+                createdAt: user.createdAt,
+                lastname_1: profile.lastname_1,
+                lastname_2: profile.lastname_2,
+                name_1: profile.name_1,
+                name_2: profile.name_2,
+                dniType: profile.dniType,
+                dni: profile.dni,
+                email: user.email,
+                prefix: profile.prefix,
+                mobile: profile.mobile,
+            });
+        });
+
+        response.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        response.setHeader('Content-Disposition', `attachment; filename=Usuarios.xlsx`);
+
+        await workbook.xlsx.write(response);
+    } catch (error) {
+        logger.error(`Error al generar el archivo Excel de usuarios: ${error.message}`);
+        return response.status(500).json({ message: 'Error al generar el archivo Excel de usuarios', details: error.message });
     }
 });
 
