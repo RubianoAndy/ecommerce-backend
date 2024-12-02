@@ -103,7 +103,81 @@ router.get('/roles', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
     }
 });
 
-router.delete('/delete-role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+router.get('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const roleId = request.params.roleId;
+
+    if (isNaN(roleId) || roleId <= 0)
+        return response.status(400).json({ message: 'ID de usuario inválido' });
+
+    try {
+        const role = await Role.findOne({ 
+            where: { id: roleId }, 
+            attributes: ['id', 'name'] 
+        });
+
+        const result = {
+            // id: role.id,
+            name: role.name,
+            message: 'Rol cargado exitosamente',
+        };
+        return response.status(200).json(result);
+    } catch (error) {
+        logger.error(`Error al obtener el rol: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al obtener el rol',
+            details: error.message,
+        });
+    }
+});
+
+router.post('/role', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const { name } = request.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0)
+        return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
+
+    try {
+        await Role.create({ name });
+
+        return response.status(201).json({ message: 'Rol creado satisfactoriamente' });
+    } catch (error) {
+        logger.error(`Error al crear el rol: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al crear el rol',
+            details: error.message,
+        });
+    }
+});
+
+router.put('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    const roleId = request.params.roleId;
+    if (isNaN(roleId) || roleId <= 0)
+        return response.status(400).json({ message: 'ID de usuario inválido' });
+
+    const { name } = request.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0)
+        return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
+
+    try {
+        const role = await Role.findOne({ where: { id: roleId }});
+        if (!role)
+            return response.status(404).json({ message: 'No existe rol asociado' });
+
+        role.name = name;
+        await role.save();
+
+        return response.status(200).json({ message: 'Rol actualizado correctamente' });
+    } catch (error) {
+        logger.error(`Error al crear el rol: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al crear el rol',
+            details: error.message,
+        });
+    }
+});
+
+router.delete('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     const { roleId } = request.params;
 
     if (!roleId)
