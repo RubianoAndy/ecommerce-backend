@@ -60,7 +60,7 @@ router.get('/profile', authMiddleware, async (request, response) => {
     }
 });
 
-router.put('/edit-profile', authMiddleware, async (request, response) => {
+router.put('/profile', authMiddleware, async (request, response) => {
     const userId = request.accessTokenDecoded.id;
 
     const { name_2, lastname_2, dniType, dni, prefix, mobile } = request.body;
