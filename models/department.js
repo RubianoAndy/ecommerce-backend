@@ -31,6 +31,7 @@ module.exports = (sequelize) => {
 
     Department.associate = (models) => {
         Department.belongsTo(models.Country, { foreignKey: 'countryId' });
+        Department.hasMany(models.Correspondence, { foreignKey: 'departmentId' });
     }
 
     return Department;

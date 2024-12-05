@@ -67,6 +67,7 @@ module.exports = (sequelize) => {
 
     Profile.associate = (models) => {
         Profile.belongsTo(models.User, { foreignKey: 'userId' }); // Relación con el modelo User
+        Profile.hasMany(models.Correspondence, { foreignKey: 'profileId' });
     };
 
     return Profile;
