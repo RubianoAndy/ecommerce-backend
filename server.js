@@ -8,6 +8,7 @@ const authRequests = require('./src/routes/auth');
 const forgotPasswordRequests = require('./src/routes/forgot-password');
 const changePasswordRequests = require('./src/routes/change-password');
 const profileRequests = require('./src/routes/profile');
+const correspondencesRequests = require('./src/routes/correspondences');
 const usersRequests = require('./src/routes/users');
 const rolesRequests = require('./src/routes/roles');
 
@@ -34,6 +35,7 @@ app.use('', forgotPasswordRequests);
 app.use('', changePasswordRequests);
 app.use('', authRequests);
 app.use('', profileRequests);
+app.use('', correspondencesRequests);
 
 app.use('', usersRequests);
 app.use('', rolesRequests);
