@@ -110,7 +110,12 @@ router.post('/refresh-token', async (request, response) => {
 });
 
 router.post('/sign-out', async (request, response) => {
-    const { refreshToken } = request.body;
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer '))
+        return response.status(401).json({ message: 'Token de acceso no proporcionado' });
+
+    const refreshToken = authHeader.split(' ')[1];
 
     try {
         const session = await Session.findOne({ where: { token: refreshToken } });
