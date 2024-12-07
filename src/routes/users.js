@@ -3,12 +3,12 @@
 const express = require('express');
 const winston = require('winston');
 const validator = require('validator');
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
 const bcrypt = require('bcrypt');
 const ExcelJS = require('exceljs');
 require('dotenv').config();
 
-const { User, Profile, Role, UserActivation } = require('../../models');
+const { User, Profile, Correspondence, Role, UserActivation, Country, Department } = require('../../models');
 
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
@@ -94,6 +94,32 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
                     where: profileConditions,
                     attributes: [
                         'name_1', 'name_2', 'lastname_1', 'lastname_2', 'dni', 'dniType'
+                    ],
+                    include: [
+                        {
+                            model: Correspondence,
+                            require: true,
+                            // where: correspondenceConditions,
+                            attributes: [
+                                'countryId', 'departmentId', 'city'
+                            ],
+                            include: [
+                                {
+                                    model: Country,
+                                    require: false,
+                                    attributes: [
+                                        'name'
+                                    ]
+                                },
+                                {
+                                    model: Department,
+                                    require: false,
+                                    attributes: [
+                                        'name'
+                                    ]
+                                }
+                            ],
+                        }
                     ],
                 },
                 {
