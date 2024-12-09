@@ -103,7 +103,22 @@ router.put('/profile', authMiddleware, async (request, response) => {
 
         await profile.save();
 
-        return response.status(200).json({ message: 'Perfil actualizado correctamente' });
+        const result = {
+            id: profile.id,
+            name_1: profile.name_1,
+            name_2: profile.name_2,
+            lastname_1: profile.lastname_1,
+            lastname_2: profile.lastname_2,
+            dniType: profile.dniType,
+            dni: profile.dni,
+            prefix: profile.prefix,
+            mobile: profile.mobile,
+            email: user.email,
+
+            message: 'Perfil actualizado exitosamente',
+        };
+
+        return response.status(200).json(result);
 
     } catch (error) {
         logger.error(`Error al actualizar la información del perfil: ${error.message}`);
