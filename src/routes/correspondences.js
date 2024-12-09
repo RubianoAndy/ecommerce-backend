@@ -57,7 +57,7 @@ router.get('/correspondence', authMiddleware, async (request, response) => {
             return response.status(404).json({ message: 'Información de correspondencia no encontrada' });
 
         const result = {
-            id: correspondence.id,
+            // id: correspondence.id,
             countryId: correspondence.countryId,
             departmentId: correspondence.departmentId,
             city: correspondence.city,
@@ -94,7 +94,7 @@ router.post('/correspondence', authMiddleware, async (request, response) => {
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
-        const correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+        var correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
         if (!correspondence) {
             try {
                 await Correspondence.create({
@@ -132,7 +132,22 @@ router.post('/correspondence', authMiddleware, async (request, response) => {
                     logger.error(`Error al enviar el correo: ${error.message}`);
                 } */
 
-                return response.status(201).json({ message: 'Registro de correspondencia creado satisfactoriamente' });
+                correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+                if(!correspondence)
+                    return response.status(404).json({ message: 'Información de correspondencia no encontrada' })
+
+                const result = {
+                    // id: correspondence.id,
+                    countryId: correspondence.countryId,
+                    departmentId: correspondence.departmentId,
+                    city: correspondence.city,
+                    zipCode: correspondence.zipCode,
+                    address: correspondence.address,
+                    observations: correspondence.observations,
+                    message: 'Registro de correspondencia creado satisfactoriamente'
+                };
+        
+                return response.status(201).json(result);
             } catch (error) {
                 logger.error(`No se pudo crear el registro de correspondencia: ${error.message}`);
                 return response.status(500).json({ message: 'No se pudo crear el registro de correspondencia', details: error.message });
@@ -147,8 +162,23 @@ router.post('/correspondence', authMiddleware, async (request, response) => {
                     address,
                     observations,
                 }, { where: { profileId: profile.id } });
-    
-                return response.status(200).json({ message: 'Registro de correspondencia actualizado satisfactoriamente' });
+
+                correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+                if(!correspondence)
+                    return response.status(404).json({ message: 'Información de correspondencia no encontrada' })
+
+                const result = {
+                    // id: correspondence.id,
+                    countryId: correspondence.countryId,
+                    departmentId: correspondence.departmentId,
+                    city: correspondence.city,
+                    zipCode: correspondence.zipCode,
+                    address: correspondence.address,
+                    observations: correspondence.observations,
+                    message: 'Registro de correspondencia actualizado satisfactoriamente'
+                };
+        
+                return response.status(200).json(result);
             } catch (error) {
                 logger.error(`No se pudo actualizar el registro de correspondencia: ${error.message}`);
                 return response.status(500).json({ message: 'No se pudo actualizar el registro de correspondencia', details: error.message });
@@ -182,7 +212,7 @@ router.get('/correspondence/:userId', authMiddleware, roleMiddleware([ SUPER_ADM
             return response.status(404).json({ message: 'Información de correspondencia no encontrada' });
 
         const result = {
-            id: correspondence.id,
+            // id: correspondence.id,
             countryId: correspondence.countryId,
             departmentId: correspondence.departmentId,
             city: correspondence.city,
@@ -221,7 +251,7 @@ router.post('/correspondence/:userId', authMiddleware, roleMiddleware([ SUPER_AD
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
-        const correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+        var correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
         if (!correspondence) {
             try {
                 await Correspondence.create({
@@ -259,7 +289,22 @@ router.post('/correspondence/:userId', authMiddleware, roleMiddleware([ SUPER_AD
                     logger.error(`Error al enviar el correo: ${error.message}`);
                 } */
 
-                return response.status(201).json({ message: 'Registro de correspondencia creado satisfactoriamente' });
+                correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+                if(!correspondence)
+                    return response.status(404).json({ message: 'Información de correspondencia no encontrada' })
+
+                const result = {
+                    // id: correspondence.id,
+                    countryId: correspondence.countryId,
+                    departmentId: correspondence.departmentId,
+                    city: correspondence.city,
+                    zipCode: correspondence.zipCode,
+                    address: correspondence.address,
+                    observations: correspondence.observations,
+                    message: 'Registro de correspondencia creado satisfactoriamente'
+                };
+        
+                return response.status(201).json(result);
             } catch (error) {
                 logger.error(`No se pudo crear el registro de correspondencia: ${error.message}`);
                 return response.status(500).json({ message: 'No se pudo crear el registro de correspondencia', details: error.message });
@@ -274,8 +319,23 @@ router.post('/correspondence/:userId', authMiddleware, roleMiddleware([ SUPER_AD
                     address,
                     observations,
                 }, { where: { profileId: profile.id } });
-    
-                return response.status(200).json({ message: 'Registro de correspondencia actualizado satisfactoriamente' });
+
+                correspondence = await Correspondence.findOne({ where: { profileId: profile.id } });
+                if(!correspondence)
+                    return response.status(404).json({ message: 'Información de correspondencia no encontrada' })
+
+                const result = {
+                    // id: correspondence.id,
+                    countryId: correspondence.countryId,
+                    departmentId: correspondence.departmentId,
+                    city: correspondence.city,
+                    zipCode: correspondence.zipCode,
+                    address: correspondence.address,
+                    observations: correspondence.observations,
+                    message: 'Registro de correspondencia actualizado satisfactoriamente'
+                };
+        
+                return response.status(200).json(result);
             } catch (error) {
                 logger.error(`No se pudo actualizar el registro de correspondencia: ${error.message}`);
                 return response.status(500).json({ message: 'No se pudo actualizar el registro de correspondencia', details: error.message });
