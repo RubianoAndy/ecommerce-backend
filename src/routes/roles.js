@@ -2,8 +2,9 @@
 
 const express = require('express');
 const winston = require('winston');
-require('dotenv').config();
 const { Sequelize } = require('sequelize');
+const ExcelJS = require('exceljs');
+require('dotenv').config();
 
 const { Role } = require('../../models');
 
@@ -219,6 +220,40 @@ router.get('/roles-small', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asyn
             message: 'Error al obtener los roles',
             details: error.message,
         });
+    }
+});
+
+router.get('/roles/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    try {
+        const roles = await Role.findAll();
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Roles');
+
+        worksheet.columns = [
+            { header: 'Rol ID', key: 'roleId', width: 15 },
+            { header: 'Fecha de creación', key: 'createdAt', width: 20 },
+            { header: 'Fecha de actualización', key: 'updatedAt', width: 20 },
+            { header: 'Nombre', key: 'name', width: 20 },
+        ];
+
+        roles.forEach(role => {
+
+            worksheet.addRow({
+                roleId: role.id,
+                createdAt: role.createdAt,
+                updatedAt: role.updatedAt,
+                name: role.name,
+            });
+        });
+
+        response.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        response.setHeader('Content-Disposition', `attachment; filename=Usuarios.xlsx`);
+
+        await workbook.xlsx.write(response);
+    } catch (error) {
+        logger.error(`Error al generar el archivo Excel de usuarios: ${error.message}`);
+        return response.status(500).json({ message: 'Error al generar el archivo Excel de usuarios', details: error.message });
     }
 });
 
