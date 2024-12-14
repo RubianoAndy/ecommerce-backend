@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW // Establece la fecha actual por defecto
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW // Establece la fecha actual por defecto
-        },
         userId: {
             type: DataTypes.INTEGER,
             references: {
@@ -40,7 +30,7 @@ module.exports = (sequelize) => {
         },
     }, {
         tableName: 'users_activation',
-        timestamps: true,
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
     });
 
     UserActivation.associate = (models) => {

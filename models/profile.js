@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false,
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW // Cambiado a Sequelize.literal
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW // Cambiado a Sequelize.literal
-        },
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -62,7 +52,7 @@ module.exports = (sequelize) => {
         },
     }, {
         tableName: 'profiles',
-        timestamps: true,
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
     });
 
     Profile.associate = (models) => {

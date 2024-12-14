@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
         sessionId: {
             type: DataTypes.BIGINT,
             references: {
@@ -32,7 +22,7 @@ module.exports = (sequelize) => {
         },
     }, {
         tableName: 'sessions_blacklist',
-        timestamps: true,
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
     });
 
     SessionBlacklist.associate = (models) => {

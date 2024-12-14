@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
         userId: {
             type: DataTypes.INTEGER,
             references: {
@@ -41,7 +31,7 @@ module.exports = (sequelize) => {
         }
     }, {
         tableName: 'password_reset_codes',
-        timestamps: true,
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
     });
 
     PasswordResetCode.associate = (models) => {

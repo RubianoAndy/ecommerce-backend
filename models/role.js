@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false,
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
-        },
         name: {
             type: DataTypes.STRING(100),
             unique: true,
@@ -27,8 +17,8 @@ module.exports = (sequelize) => {
         },
     }, {
         tableName: 'roles',
-        timestamps: true,
-        paranoid: true, // Habilita soft deletes de forma automática
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
+        paranoid: true,     // Habilita automáticamente soft delete (deletedAt)
     });
 
     Role.associate = (models) => {

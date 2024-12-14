@@ -10,16 +10,6 @@ module.exports = (sequelize) => {
             primaryKey: true,
             allowNull: false,
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW,
-        },
         activated: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
@@ -45,7 +35,7 @@ module.exports = (sequelize) => {
         },
     }, {
         tableName: 'users',
-        timestamps: true,
+        timestamps: true,   // Habilita automáticamente createdAt y updatedAt
     });
 
     User.associate = (models) => {
