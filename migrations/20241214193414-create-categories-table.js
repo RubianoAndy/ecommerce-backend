@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('roles', {
+    await queryInterface.createTable('categories', {
       id: {
         type: Sequelize.BIGINT,
         autoIncrement: true,
@@ -13,38 +13,26 @@ module.exports = {
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW // Establece la fecha actual por defecto
+        defaultValue: Sequelize.NOW   // Establece la fecha actual por defecto
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW // Establece la fecha actual por defecto
+        defaultValue: Sequelize.NOW   // Establece la fecha actual por defecto
       },
       deletedAt : {
         type: Sequelize.DATE,
         allowNull: true,
       },
       name: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(50),
         unique: true,
         allowNull: false
       },
     });
-
-    await queryInterface.addColumn('users', 'roleId', {
-      type: Sequelize.BIGINT,
-      references: {
-        model: 'roles',
-        key: 'id'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
-      allowNull: false
-    });
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('users', 'roleId');
-    await queryInterface.dropTable('roles');
+    await queryInterface.dropTable('categories');
   }
 };

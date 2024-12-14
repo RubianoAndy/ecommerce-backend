@@ -13,12 +13,12 @@ module.exports = (sequelize) => {
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'), // Cambiado a Sequelize.literal
+            defaultValue: Sequelize.NOW // Cambiado a Sequelize.literal
         },
         updatedAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'), // Cambiado a Sequelize.literal
+            defaultValue: Sequelize.NOW // Cambiado a Sequelize.literal
         },
         userId: {
             type: DataTypes.INTEGER,
@@ -45,7 +45,7 @@ module.exports = (sequelize) => {
             allowNull: true,
         },
         dniType: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(50),
             allowNull: true,
         },
         dni: {

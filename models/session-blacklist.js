@@ -13,12 +13,12 @@ module.exports = (sequelize) => {
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Establece la fecha actual por defecto
+            defaultValue: Sequelize.NOW
         },
         updatedAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Establece la fecha actual por defecto
+            defaultValue: Sequelize.NOW
         },
         sessionId: {
             type: DataTypes.BIGINT,
