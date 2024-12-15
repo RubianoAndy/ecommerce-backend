@@ -150,5 +150,5 @@ When Sequelize is initialized, several files and folders are automatically gener
 <hr>
 
 <p align="center">
-    &copy; 2024 <a href="https://YouTube.com/@RubianoAndy" target="_blank" class="hover:underline">Andy Rubiano™ - International company</a>. All rights reserved.
+    &copy; 2025 <a href="https://YouTube.com/@RubianoAndy" target="_blank" class="hover:underline">Andy Rubiano™ - International company</a>. All rights reserved.
 </p>
