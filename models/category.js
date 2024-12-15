@@ -18,7 +18,13 @@ module.exports = (sequelize) => {
         url: {
             type: DataTypes.STRING(50),
             unique: true,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                is: {
+                    args: /^[a-z0-9]+(-[a-z0-9]+)*$/,
+                    msg: 'La URL debe estar en minúsculas y puede contener números y guiones.'
+                }
+            }
         },
     }, {
         tableName: 'categories',
