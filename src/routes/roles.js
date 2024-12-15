@@ -108,7 +108,7 @@ router.get('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
     const roleId = request.params.roleId;
 
     if (isNaN(roleId) || roleId <= 0)
-        return response.status(400).json({ message: 'ID de usuario inválido' });
+        return response.status(400).json({ message: 'ID de rol inválido' });
 
     try {
         const role = await Role.findOne({ 
@@ -153,7 +153,7 @@ router.post('/role', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
 router.put('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     const roleId = request.params.roleId;
     if (isNaN(roleId) || roleId <= 0)
-        return response.status(400).json({ message: 'ID de usuario inválido' });
+        return response.status(400).json({ message: 'ID de rol inválido' });
 
     const { name } = request.body;
 
@@ -248,12 +248,12 @@ router.get('/roles/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asyn
         });
 
         response.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        response.setHeader('Content-Disposition', `attachment; filename=Usuarios.xlsx`);
+        response.setHeader('Content-Disposition', `attachment; filename=Roles.xlsx`);
 
         await workbook.xlsx.write(response);
     } catch (error) {
-        logger.error(`Error al generar el archivo Excel de usuarios: ${error.message}`);
-        return response.status(500).json({ message: 'Error al generar el archivo Excel de usuarios', details: error.message });
+        logger.error(`Error al generar el archivo Excel de roles: ${error.message}`);
+        return response.status(500).json({ message: 'Error al generar el archivo Excel de roles', details: error.message });
     }
 });
 
