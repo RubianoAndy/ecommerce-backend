@@ -35,6 +35,9 @@ module.exports = {
         allowNull: false
       },
     });
+
+    await queryInterface.addIndex('categories', ['name']);
+    await queryInterface.addIndex('categories', ['url']);
   },
 
   async down (queryInterface, Sequelize) {
