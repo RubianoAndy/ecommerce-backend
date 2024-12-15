@@ -228,7 +228,9 @@ router.get('/categories-small', async (request, response) => {
 
 router.get('/categories/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), async (request, response) => {
     try {
-        const categories = await Category.findAll();
+        const categories = await Category.findAll({
+            order: [['id', 'ASC']]
+        });
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Categorías');

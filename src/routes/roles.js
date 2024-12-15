@@ -227,7 +227,9 @@ router.get('/roles-small', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asyn
 
 router.get('/roles/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     try {
-        const roles = await Role.findAll();
+        const roles = await Role.findAll({
+            order: [['id', 'ASC']]
+        });
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Roles');
