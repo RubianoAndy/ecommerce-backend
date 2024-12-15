@@ -15,12 +15,16 @@ module.exports = (sequelize) => {
             unique: true,
             allowNull: false,
         },
+        url: {
+            type: DataTypes.STRING(50),
+            unique: true,
+            allowNull: false
+        },
     }, {
         tableName: 'categories',
         timestamps: true,   // Habilita automáticamente createdAt y updatedAt
         paranoid: true,     // Habilita automáticamente soft delete (deletedAt)
     });
-
 
     return Category;
 };

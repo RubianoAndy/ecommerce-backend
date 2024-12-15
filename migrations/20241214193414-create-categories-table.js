@@ -29,6 +29,11 @@ module.exports = {
         unique: true,
         allowNull: false
       },
+      url: {
+        type: Sequelize.STRING(50),
+        unique: true,
+        allowNull: false
+      },
     });
   },
 
