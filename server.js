@@ -11,6 +11,7 @@ const profileRequests = require('./src/routes/profile');
 const correspondencesRequests = require('./src/routes/correspondences');
 const usersRequests = require('./src/routes/users');
 const rolesRequests = require('./src/routes/roles');
+const categoriesRequests = require('./src/routes/categories')
 
 const countriesRequests = require('./src/routes/countries');
 const departmentsRequests = require('./src/routes/departments');
@@ -39,6 +40,7 @@ app.use('', correspondencesRequests);
 
 app.use('', usersRequests);
 app.use('', rolesRequests);
+app.use('', categoriesRequests);
 
 app.use('/api', countriesRequests);
 app.use('/api', departmentsRequests);
