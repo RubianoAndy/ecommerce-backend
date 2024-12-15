@@ -168,7 +168,7 @@ router.put('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
         role.name = name;
         await role.save();
 
-        return response.status(200).json({ message: 'Rol actualizado correctamente' });
+        return response.status(200).json({ message: 'Rol actualizado satisfactoriamente' });
     } catch (error) {
         logger.error(`Error al crear el rol: ${error.message}`);
         return response.status(500).json({
@@ -180,6 +180,8 @@ router.put('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
 
 router.delete('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
     const { roleId } = request.params;
+    if (isNaN(roleId) || roleId <= 0)
+        return response.status(400).json({ message: 'ID de rol inválido' });
 
     if (!roleId)
         return response.status(400).json({ message: 'No se ha proporcionado un rol' });
@@ -198,7 +200,7 @@ router.delete('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), 
 
         await role.destroy();       // No destruye el registro si el modelo tiene paranoid en true (soft delete)
 
-        return response.status(200).json({ message: 'Rol eliminado correctamente' });
+        return response.status(200).json({ message: 'Rol eliminado satisfactoriamente' });
 
     } catch (error) {
         logger.error(`Error al eliminar el rol: ${error.message}`);
