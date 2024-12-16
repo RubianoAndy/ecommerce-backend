@@ -3,31 +3,30 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
 const winston = require('winston');
 require('dotenv').config();
 
 const { User, Profile } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
-// const roleMiddleware = require('../middlewares/role-middleware');
-
-// const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
 
 const AVATAR_PATH = process.env.AVATAR_PATH;
 
 // Configuración de almacenamiento de multer
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Se asegura de que el directorio exista
-        const uploadDir = path.join(process.cwd(), AVATAR_PATH);
+    destination: (request, file, cb) => {
+        const uploadDir = path.join(process.cwd(), AVATAR_PATH); // Se asegura de que el directorio exista
         
         // Crea directorio si no existe
-        fs.mkdir(uploadDir, { recursive: true })
-            .then(() => cb(null, uploadDir))
-            .catch(err => cb(err, uploadDir));
+        fs.mkdir(uploadDir, { recursive: true }, (error) => {
+            if (error)
+                return cb(error);
+
+            cb(null, uploadDir);
+        });
     },
-    filename: (req, file, cb) => {
-        // Generar nombre de archivo único
+    filename: (request, file, cb) => {
+        // Genera nombre de archivo único
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, `Avatar-${uniqueSuffix}${path.extname(file.originalname)}`);
     }
@@ -38,7 +37,7 @@ const upload = multer({
     limits: { 
         fileSize: 3 * 1024 * 1024 // Límite de 3 MB
     },
-    fileFilter: (req, file, cb) => {
+    fileFilter: (request, file, cb) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
         if (allowedTypes.includes(file.mimetype))
             cb(null, true);
@@ -60,7 +59,7 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-router.post('/upload-avatar', authMiddleware, upload.single('profileImage'), async (request, response) => {
+router.post('/avatar', authMiddleware, upload.single('profileImage'), async (request, response) => {
     const userId = request.accessTokenDecoded.id;       // Se decodifica en el authMiddleware
 
     try {
@@ -85,12 +84,12 @@ router.post('/upload-avatar', authMiddleware, upload.single('profileImage'), asy
 
         // Eliminar imagen anterior si existe
         if (profile && profile.avatar) {
-            const oldImagePath = path.join(AVATAR_PATH, userProfile.avatar);
+            const oldImagePath = path.join(process.cwd(), AVATAR_PATH, profile.avatar);
             try {
                 await fs.access(oldImagePath);
                 await fs.unlink(oldImagePath);
             } catch (error) {
-                logger.warn(`Imagen anterior no encontrada: ${oldImagePath}`);  // Si el archivo no existe, no hacer nada
+                logger.warn(`Imagen anterior no encontrada: ${oldImagePath}`); // Si el archivo no existe, no hacer nada
             }
         }
 
@@ -107,6 +106,44 @@ router.post('/upload-avatar', authMiddleware, upload.single('profileImage'), asy
     } catch (error) {
         logger.error(`Error al cargar la imagen perfil: ${error.message}`);
         return response.status(500).json({ message: 'Error al cargar la imagen perfil', details: error.message });
+    }
+});
+
+router.get('/avatar', authMiddleware, async (request, response) => {
+    const userId = request.accessTokenDecoded.id;
+
+    try {
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user)
+            return response.status(404).json({ message: 'No existe usuario asociado' });
+        
+        if (!user.activated)
+            return response.status(403).json({ message: 'Usuario inactivo' });
+
+        const profile = await Profile.findOne({ where: { userId } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
+
+        if (!profile.avatar)
+            return response.status(404).json({ message: 'Imagen de perfil no encontrada' });
+
+        const imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
+
+        if (!fs.existsSync(imagePath))
+            return response.status(404).json({ message: 'Archivo de imagen no encontrado', details: `Ruta: ${imagePath}` });
+
+        response.sendFile(imagePath, (error) => {
+            if (error) {
+                logger.error(`Error al enviar la imagen: ${error.message}`);
+                return response.status(500).json({ 
+                    message: 'Error al enviar la imagen', 
+                    details: error.message 
+                });
+            }
+        });
+    } catch (error) {
+        logger.error(`Error al recuperar la imagen perfil: ${error.message}`);
+        return response.status(500).json({ message: 'Error al recuperar la imagen perfil', details: error.message });
     }
 });
 
