@@ -91,8 +91,9 @@ For documentation purposes, this repository was created as follows:
 | 18- | Install nodemailer for send emails          | `npm install nodemailer`               |
 | 19- | Install validator to validate fields        | `npm install validator`                |
 | 20- | Install exceljs to genere xlsx reports      | `npm install exceljs`                  |
-| 21- | Install multer to upload and store files    | `npm install multer`                  |
-| 22- | Deploy the proyect                          | `npm run`                              |
+| 21- | Install multer to upload and store files    | `npm install multer`                   |
+| 22- | Install sharp to resize photos              | `npm install sharp`                    |
+| 23- | Deploy the proyect                          | `npm run`                              |
 
 ### Parameters for the .env file
 
