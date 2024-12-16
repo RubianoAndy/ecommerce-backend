@@ -16,6 +16,8 @@ const categoriesRequests = require('./src/routes/categories')
 const countriesRequests = require('./src/routes/countries');
 const departmentsRequests = require('./src/routes/departments');
 
+const avatarRequests = require('./src/routes/avatar');
+
 const port = process.env.SERVER_PORT;
 
 const app = express();
@@ -37,8 +39,9 @@ app.use('', changePasswordRequests);
 app.use('', authRequests);
 app.use('', profileRequests);
 app.use('', correspondencesRequests);
-
 app.use('', usersRequests);
+app.use('', avatarRequests);
+
 app.use('', rolesRequests);
 app.use('', categoriesRequests);
 
