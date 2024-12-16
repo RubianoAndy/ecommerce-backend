@@ -13,11 +13,13 @@ const authMiddleware = require('../middlewares/auth-middleware');
 
 // const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
 
+const AVATAR_PATH = process.env.AVATAR_PATH;
+
 // Configuración de almacenamiento de multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         // Se asegura de que el directorio exista
-        const uploadDir = path.join(process.cwd(), '../storage-uploads/profile-images');
+        const uploadDir = path.join(process.cwd(), AVATAR_PATH);
         
         // Crea directorio si no existe
         fs.mkdir(uploadDir, { recursive: true })
@@ -27,7 +29,7 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         // Generar nombre de archivo único
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, `avatar-${uniqueSuffix}${path.extname(file.originalname)}`);
+        cb(null, `Avatar-${uniqueSuffix}${path.extname(file.originalname)}`);
     }
 });
 
@@ -59,6 +61,8 @@ const logger = winston.createLogger({
 const router = express.Router();
 
 router.post('/upload-avatar', authMiddleware, upload.single('profileImage'), async (request, response) => {
+    const userId = request.accessTokenDecoded.id;       // Se decodifica en el authMiddleware
+
     try {
         if (!request.file)
             return response.status(400).json({ message: 'No se ha subido ningún archivo' });
@@ -68,30 +72,37 @@ router.post('/upload-avatar', authMiddleware, upload.single('profileImage'), asy
             return response.status(400).json({ message: 'El archivo excede el límite de 3MB' });
         }
 
-        /* const userProfile = await Profile.findOne({ 
-            where: { userId: request.user.id } 
-        }); */
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user)
+            return response.status(404).json({ message: 'No existe usuario asociado' });
+        
+        if (!user.activated)
+            return response.status(403).json({ message: 'Usuario inactivo' });
+
+        const profile = await Profile.findOne({ where: { userId } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
 
         // Eliminar imagen anterior si existe
-        /* if (userProfile && userProfile.avatar) {
-            const oldImagePath = path.join('../storage-uploads/profile-images', userProfile.avatar);
+        if (profile && profile.avatar) {
+            const oldImagePath = path.join(AVATAR_PATH, userProfile.avatar);
             try {
                 await fs.access(oldImagePath);
                 await fs.unlink(oldImagePath);
             } catch (error) {
                 logger.warn(`Imagen anterior no encontrada: ${oldImagePath}`);  // Si el archivo no existe, no hacer nada
             }
-        } */
+        }
 
-        /* await Profile.update(
+        await profile.update(
             { avatar: request.file.filename }, 
-            { where: { userId: request.user.id } }
-        ); */
+            { where: { userId } }
+        );
     
         return response.status(200).json({
             message: 'Imagen de perfil cargada exitosamente',
-            filename: request.file.filename,
-            path: request.file.path
+            // filename: request.file.filename,
+            // path: request.file.path
         });
     } catch (error) {
         logger.error(`Error al cargar la imagen perfil: ${error.message}`);

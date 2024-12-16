@@ -50,6 +50,10 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING(15),
             allowNull: true,
         },
+        avatar: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
     }, {
         tableName: 'profiles',
         timestamps: true,   // Habilita automáticamente createdAt y updatedAt

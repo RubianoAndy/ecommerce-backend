@@ -134,6 +134,9 @@ EMAIL_HOST_PASSWORD=<HOST-PASSWORD>
 SUPER_ADMIN=1
 ADMIN=2
 CUSTOMER=3
+
+# Storage uploads
+AVATAR_PATH=../storage-uploads/profile-images
 ```
 
 ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
