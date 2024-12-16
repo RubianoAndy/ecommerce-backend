@@ -2,7 +2,7 @@
 
 const express = require('express');
 const multer = require('multer');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const winston = require('winston');
 require('dotenv').config();
@@ -13,13 +13,17 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const AVATAR_PATH = process.env.AVATAR_PATH;
 
 const storage = multer.diskStorage({
-    destination: (request, file, cb) => {
+    destination: async (request, file, cb) => {
         const uploadDir = path.join(process.cwd(), AVATAR_PATH);
         
-        if (!fs.existsSync(uploadDir))
-            fs.mkdirSync(uploadDir, { recursive: true });
-
-        cb(null, uploadDir);
+        try {
+            if (!await fs.access(uploadDir).then(() => true).catch(() => false))
+                await fs.mkdir(uploadDir, { recursive: true });
+            
+            cb(null, uploadDir);
+        } catch (error) {
+            cb(new Error('Error al crear el directorio de carga'), false);
+        }
     },
     filename: (request, file, cb) => {
         const userId = request.accessTokenDecoded.id;
@@ -36,11 +40,10 @@ const upload = multer({
     },
     fileFilter: (request, file, cb) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
+        if (allowedTypes.includes(file.mimetype))
             cb(null, true);
-        } else {
+        else
             cb(new Error('Tipo de archivo no permitido'), false);
-        }
     }
 });
 
@@ -54,10 +57,10 @@ const logger = winston.createLogger({
 
 const router = express.Router();
 
-const deleteOldAvatar = (avatarPath) => {
+const deleteOldAvatar = async (avatarPath) => {
     try {
-        if (fs.existsSync(avatarPath))
-            fs.unlinkSync(avatarPath);
+        await fs.access(avatarPath); // Verifica si el archivo existe
+        await fs.unlink(avatarPath); // Elimina el archivo
     } catch (error) {
         logger.error(`Error al eliminar el avatar: ${error.message}`);
     }
@@ -125,7 +128,7 @@ router.get('/avatar', authMiddleware, async (request, response) => {
 
         const imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
 
-        if (!fs.existsSync(imagePath))
+        if (!await fs.access(imagePath).then(() => true).catch(() => false))
             return response.status(404).json({ message: 'Archivo de imagen no encontrado' });
 
         response.sendFile(imagePath, (error) => {
