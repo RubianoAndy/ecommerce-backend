@@ -2,6 +2,7 @@
 
 const express = require('express');
 const multer = require('multer');
+const sharp = require('sharp');
 const fs = require('fs').promises;
 const path = require('path');
 const winston = require('winston');
@@ -87,7 +88,7 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
         // Eliminar avatar anterior si existe
         if (profile.avatar) {
             const oldAvatarPath = path.join(process.cwd(), AVATAR_PATH, profile.avatar);
-            deleteOldAvatar(oldAvatarPath);
+            await deleteOldAvatar(oldAvatarPath);
         }
 
         await profile.update(
