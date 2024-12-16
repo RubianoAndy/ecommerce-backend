@@ -2,8 +2,8 @@
 
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const winston = require('winston');
 require('dotenv').config();
 
@@ -83,13 +83,15 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
         // Eliminar imagen anterior si existe
-        if (profile && profile.avatar) {
+        if (profile.avatar) {
             const oldImagePath = path.join(process.cwd(), AVATAR_PATH, profile.avatar);
             try {
-                await fs.access(oldImagePath);
-                await fs.unlink(oldImagePath);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                    console.log(`Imagen anterior eliminada: ${oldImagePath}`);
+                }
             } catch (error) {
-                logger.warn(`Imagen anterior no encontrada: ${oldImagePath}`); // Si el archivo no existe, no hacer nada
+                console.error(`Error al eliminar imagen anterior: ${error.message}`);
             }
         }
 
