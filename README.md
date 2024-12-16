@@ -51,6 +51,7 @@ and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 1
 | exceljs      | 4.4.0   |
 | express      | 4.21.0  |
 | jsonwebtoken | 9.0.2   |
+| multer       | 1.4.5   |
 | nodemailer   | 6.9.15  |
 | pg           | 8.13.0  |
 | pg-hstore    | 2.3.4   |
@@ -90,7 +91,8 @@ For documentation purposes, this repository was created as follows:
 | 18- | Install nodemailer for send emails          | `npm install nodemailer`               |
 | 19- | Install validator to validate fields        | `npm install validator`                |
 | 20- | Install exceljs to genere xlsx reports      | `npm install exceljs`                  |
-| 21- | Deploy the proyect                          | `npm run`                              |
+| 21- | Install multer to upload and store files    | `npm install multer`                  |
+| 22- | Deploy the proyect                          | `npm run`                              |
 
 ### Parameters for the .env file
 
