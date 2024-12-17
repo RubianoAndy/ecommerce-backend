@@ -13,7 +13,7 @@ const authMiddleware = require('../middlewares/auth-middleware');
 
 const AVATAR_PATH = process.env.AVATAR_PATH;
 
-const storage = multer.diskStorage({
+/* const storage = multer.diskStorage({
     destination: async (request, file, cb) => {
         const uploadDir = path.join(process.cwd(), AVATAR_PATH);
         
@@ -32,19 +32,20 @@ const storage = multer.diskStorage({
         const extension = path.extname(file.originalname);
         cb(null, `${uniquePrefix}${extension}`);
     }
-});
+}); */
 
-const upload = multer({ 
+const storage = multer.memoryStorage(); // Almacenamiento en memoria
+
+const upload = multer({
     storage: storage,
-    limits: { 
-        fileSize: 3 * 1024 * 1024 // Límite de 3 MB
-    },
-    fileFilter: (request, file, cb) => {
+    limits: { fileSize: 3 * 1024 * 1024 }, // Límite de 3 MB
+    fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype))
+        if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
-        else
+        } else {
             cb(new Error('Tipo de archivo no permitido'), false);
+        }
     }
 });
 
@@ -74,6 +75,9 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
         if (!request.file)
             return response.status(400).json({ message: 'No se ha subido ningún archivo' });
 
+        if (!request.file.buffer || request.file.buffer.length === 0)
+            return response.status(400).json({ message: 'El archivo está vacío o no se ha cargado correctamente' });
+
         const user = await User.findOne({ where: { id: userId } });
         if (!user)
             return response.status(404).json({ message: 'No existe usuario asociado' });
@@ -91,13 +95,21 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
             await deleteOldAvatar(oldAvatarPath);
         }
 
+        const outputFilePath = path.join(process.cwd(), AVATAR_PATH, `User-${userId}-Avatar-${Date.now()}.webp`);
+
+        await sharp(request.file.buffer)            // Usa el buffer de la imagen
+            .resize(500, 500)
+            .toFormat('webp', { quality: 80 })      // Converti a formato WebP con calidad 80
+            .toFile(outputFilePath);                // Guarda la imagen procesada en disco
+
+        // Actualiza el perfil con el nuevo nombre de archivo del avatar
         await profile.update(
-            { avatar: request.file.filename }, 
+            { avatar: path.basename(outputFilePath) }, 
             { where: { userId } }
         );
     
         return response.status(200).json({
-            message: 'Imagen de perfil cargada exitosamente',
+            message: 'Imagen de perfil procesada y guardada exitosamente',
             // filename: request.file.filename
         });
     } catch (error) {
