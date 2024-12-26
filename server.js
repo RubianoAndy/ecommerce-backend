@@ -16,6 +16,8 @@ const categoriesRequests = require('./src/routes/categories')
 const countriesRequests = require('./src/routes/countries');
 const departmentsRequests = require('./src/routes/departments');
 
+const contactRequests = require('./src/routes/contact');
+
 const avatarRequests = require('./src/routes/avatar');
 
 const port = process.env.SERVER_PORT;
@@ -47,6 +49,8 @@ app.use('', categoriesRequests);
 
 app.use('/api', countriesRequests);
 app.use('/api', departmentsRequests);
+
+app.use('', contactRequests);
 
 app.use((request, response) => {
     response.status(404).send('<h1>Error 404</h1>')  // Para todas las peticiones que no encuentra, se le coloca el 404, es importante dejar al final de todas las peticiones
