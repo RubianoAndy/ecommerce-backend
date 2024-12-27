@@ -8,6 +8,7 @@ const ExcelJS = require('exceljs');
 require('dotenv').config();
 
 const logger = require('../config/logger');
+const limiter = require('../config/limiter');
 
 const { User, Profile, Correspondence, Role, UserActivation, Country, Department } = require('../../models');
 
@@ -237,7 +238,7 @@ router.get('/user/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
     }
 });
 
-router.patch('/user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+router.patch('/user-status', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), limiter(10, 20), async (request, response) => {
     const { userId, activated } = request.body;
     
     if (!userId || activated === undefined || activated === null)

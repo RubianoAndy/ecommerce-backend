@@ -9,16 +9,11 @@ require('dotenv').config();
 
 const logger = require('../config/logger');
 const transporter = require('../config/transporter');
+const limiter = require('../config/limiter');
 
 const router = express.Router();
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,   // 15 minutes
-    max: 5,                     // Cantidad de peticiones permitidas
-    message: 'Demasiadas solicitudes desde esta IP, por favor intente nuevamente en 15 minutos',
-});
-
-router.post('/send-contact', limiter, async (request, response) => {
+router.post('/send-contact', limiter(5, 15), async (request, response) => {
     const { name, email, subject, message } = request.body;
 
     if (!name || !email || !subject || !message)
