@@ -349,7 +349,7 @@ router.put('/user/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
     }
 });
 
-router.get('/users/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+router.get('/users/excel', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), limiter(10, 20), async (request, response) => {
     try {
         const users = await User.findAll({
             include: [
