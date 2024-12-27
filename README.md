@@ -43,22 +43,23 @@
 This project was generated with [Node.js](https://nodejs.org/en) 22.11.0, [NPM](https://nodejs.org/en) version 10.9.0 
 and PostgreSQL database with [PG Admin 4](https://www.postgresql.org/) version 17.2-1 and its dependencies are:
 
-| Dependency   | Version |
-| ------------ | :------ |
-| bcrypt       | 5.1.1   |
-| cors         | 2.8.5   |
-| dotenv       | 16.4.5  |
-| exceljs      | 4.4.0   |
-| express      | 4.21.0  |
-| jsonwebtoken | 9.0.2   |
-| multer       | 1.4.5   |
-| nodemailer   | 6.9.15  |
-| pg           | 8.13.0  |
-| pg-hstore    | 2.3.4   |
-| sequelize    | 6.37.3  |
-| uuid         | 10.0.0  |
-| validator    | 13.12.0 |
-| winston      | 3.14.2  |
+| Dependency         | Version |
+| ------------------ | :------ |
+| bcrypt             | 5.1.1   |
+| cors               | 2.8.5   |
+| dotenv             | 16.4.5  |
+| exceljs            | 4.4.0   |
+| express            | 4.21.0  |
+| express-rate-limit | 7.5.0   |
+| jsonwebtoken       | 9.0.2   |
+| multer             | 1.4.5   |
+| nodemailer         | 6.9.15  |
+| pg                 | 8.13.0  |
+| pg-hstore          | 2.3.4   |
+| sequelize          | 6.37.3  |
+| uuid               | 10.0.0  |
+| validator          | 13.12.0 |
+| winston            | 3.14.2  |
 
 | Dev dependency   | Version |
 | ---------------- | :------ |
@@ -93,7 +94,8 @@ For documentation purposes, this repository was created as follows:
 | 20- | Install exceljs to genere xlsx reports      | `npm install exceljs`                  |
 | 21- | Install multer to upload and store files    | `npm install multer`                   |
 | 22- | Install sharp to resize photos              | `npm install sharp`                    |
-| 23- | Deploy the proyect                          | `npm run`                              |
+| 23- | Install express rate to limit the requests  | `npm install express-rate-limit`                    |
+| 24- | Deploy the proyect                          | `npm run`                              |
 
 ### Parameters for the .env file
 
