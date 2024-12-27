@@ -1,34 +1,24 @@
 'use strict';
 
 const express = require('express');
-const nodemailer = require('nodemailer');
+const rateLimit = require('express-rate-limit');
 const validator = require('validator');
 const fs = require('fs').promises;
 const path = require('path');
-const winston = require('winston');
 require('dotenv').config();
 
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.simple(),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' })
-    ]
-});
-
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,  // Set to true if port 465 is used
-    auth: {
-        user: process.env.EMAIL_HOST_USER,
-        pass: process.env.EMAIL_HOST_PASSWORD,
-    }
-});
+const logger = require('../config/logger');
+const transporter = require('../config/transporter');
 
 const router = express.Router();
 
-router.post('/send-contact', async (request, response) => {
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,   // 15 minutes
+    max: 5,                     // Cantidad de peticiones permitidas
+    message: 'Demasiadas solicitudes desde esta IP, por favor intente nuevamente en 15 minutos',
+});
+
+router.post('/send-contact', limiter, async (request, response) => {
     const { name, email, subject, message } = request.body;
 
     if (!name || !email || !subject || !message)

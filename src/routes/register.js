@@ -1,38 +1,18 @@
 'use strict';
 
 const express = require('express');
-const nodemailer = require('nodemailer');
 const validator = require('validator');
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const winston = require('winston');
 require('dotenv').config();
 
+const logger = require('../config/logger');
+const transporter = require('../config/transporter');
+
 const { User, Profile, UserActivation } = require('../../models');
-
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' }),
-    ]
-});
-
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,  // Set to true if port 465 is used
-    auth: {
-        user: process.env.EMAIL_HOST_USER,
-        pass: process.env.EMAIL_HOST_PASSWORD,
-    }
-});
 
 const router = express.Router();
 

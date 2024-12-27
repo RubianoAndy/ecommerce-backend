@@ -4,21 +4,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const winston = require('winston');
 require('dotenv').config();
 
-const { User, Session, SessionBlacklist } = require('../../models');
+const logger = require('../config/logger');
 
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' }),
-    ]
-});
+const { User, Session, SessionBlacklist } = require('../../models');
 
 const router = express.Router();
 

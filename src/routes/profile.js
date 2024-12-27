@@ -1,22 +1,12 @@
 'use strict';
 
 const express = require('express');
-const winston = require('winston');
 require('dotenv').config();
+
+const logger = require('../config/logger');
 
 const { User, Profile } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
-
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' }),
-    ]
-});
 
 const router = express.Router();
 

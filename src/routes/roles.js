@@ -1,10 +1,11 @@
 'use strict';
 
 const express = require('express');
-const winston = require('winston');
 const { Sequelize } = require('sequelize');
 const ExcelJS = require('exceljs');
 require('dotenv').config();
+
+const logger = require('../config/logger');
 
 const { Role } = require('../../models');
 
@@ -13,17 +14,6 @@ const roleMiddleware = require('../middlewares/role-middleware');
 
 const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
 // const ADMIN = Number(process.env.ADMIN);
-
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' }),
-    ]
-});
 
 const router = express.Router();
 

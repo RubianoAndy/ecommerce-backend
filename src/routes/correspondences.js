@@ -7,33 +7,15 @@ const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();
 
+const logger = require('../config/logger');
+const transporter = require('../config/transporter');
+
 const { User, Profile, Correspondence } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
 const { where } = require('sequelize');
 
 const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
-
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' }),
-    ]
-});
-
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,  // Set to true if port 465 is used
-    auth: {
-        user: process.env.EMAIL_HOST_USER,
-        pass: process.env.EMAIL_HOST_PASSWORD,
-    }
-});
 
 const router = express.Router();
 

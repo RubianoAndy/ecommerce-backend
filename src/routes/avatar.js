@@ -5,8 +5,9 @@ const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs').promises;
 const path = require('path');
-const winston = require('winston');
 require('dotenv').config();
+
+const logger = require('../config/logger');
 
 const { User, Profile } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -47,14 +48,6 @@ const upload = multer({
             cb(new Error('Tipo de archivo no permitido'), false);
         }
     }
-});
-
-const logger = winston.createLogger({
-    level: 'error',
-    format: winston.format.simple(),
-    transports: [
-        new winston.transports.File({ filename: 'error.log' })
-    ]
 });
 
 const router = express.Router();
