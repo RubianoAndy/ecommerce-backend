@@ -2,7 +2,7 @@
 
 const express = require('express');
 const validator = require('validator');
-const { Sequelize, where } = require('sequelize');
+const { Sequelize } = require('sequelize');
 const bcrypt = require('bcrypt');
 const ExcelJS = require('exceljs');
 require('dotenv').config();

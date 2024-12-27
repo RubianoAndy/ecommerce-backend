@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const validator = require('validator');
 const fs = require('fs').promises;
 const path = require('path');
