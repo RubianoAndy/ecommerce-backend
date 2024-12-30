@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const logger = require('../config/logger');
 
-const { Role } = require('../../models');
+const { Role, User } = require('../../models');
 
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
@@ -112,6 +112,30 @@ router.get('/role/:roleId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), asy
             message: 'Rol cargado exitosamente',
         };
         return response.status(200).json(result);
+    } catch (error) {
+        logger.error(`Error al obtener el rol: ${error.message}`);
+        return response.status(500).json({
+            message: 'Error al obtener el rol',
+            details: error.message,
+        });
+    }
+});
+
+router.get('/role', authMiddleware, async (request, response) => {
+    const userId = request.accessTokenDecoded.id;
+
+    if (isNaN(userId) || userId <= 0)
+        return response.status(400).json({ message: 'Usuario inválido' });
+
+    try {
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user)
+            return response.status(404).json({ message: 'No existe usuario asociado' });
+        
+        if (!user.activated)
+            return response.status(403).json({ message: 'Usuario inactivo' });
+
+        return response.status(200).json({ roleId: user.roleId });
     } catch (error) {
         logger.error(`Error al obtener el rol: ${error.message}`);
         return response.status(500).json({
