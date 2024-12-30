@@ -102,7 +102,7 @@ For documentation purposes, this repository was created as follows:
 The environment variables used in this project are as follows:
 
 ```sh
-SERVER_PORT=3000
+BASE_URL=http://localhost:3000
 
 API_URL=http://localhost:4200
 SUPPORT_EMAIL=email@gmail.com

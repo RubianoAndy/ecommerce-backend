@@ -20,7 +20,8 @@ const contactRequests = require('./src/routes/contact');
 
 const avatarRequests = require('./src/routes/avatar');
 
-const port = process.env.SERVER_PORT;
+const baseUrl = process.env.BASE_URL;
+const port = baseUrl.split(':').pop();
 
 const app = express();
 
@@ -57,5 +58,5 @@ app.use((request, response) => {
 });
 
 app.listen(port, () => {
-    console.log(`Servidor en ejecución en http://localhost:${port}/`);
+    console.log(`Servidor en ejecución en ${baseUrl}/`);
 });
