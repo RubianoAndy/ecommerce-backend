@@ -11,6 +11,10 @@ const logger = require('../config/logger');
 
 const { User, Profile } = require('../../models');
 const authMiddleware = require('../middlewares/auth-middleware');
+const roleMiddleware = require('../middlewares/role-middleware');
+
+const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
+// const ADMIN = Number(process.env.ADMIN);
 
 const AVATAR_PATH = process.env.AVATAR_PATH;
 
@@ -126,6 +130,48 @@ router.get('/avatar', authMiddleware, async (request, response) => {
             return response.status(403).json({ message: 'Usuario inactivo' });
 
         const profile = await Profile.findOne({ where: { userId } });
+        if (!profile)
+            return response.status(404).json({ message: 'Perfil no encontrado' });
+
+        if (!profile.avatar)
+            return response.status(404).json({ message: 'Imagen de perfil no encontrada' });
+
+        const imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
+
+        if (!await fs.access(imagePath).then(() => true).catch(() => false))
+            return response.status(404).json({ message: 'Archivo de imagen no encontrado' });
+
+        response.sendFile(imagePath, (error) => {
+            if (error) {
+                logger.error(`Error al enviar imagen: ${error.message}`);
+                return response.status(500).json({ 
+                    message: 'Error al enviar la imagen', 
+                    details: error.message 
+                });
+            }
+        });
+    } catch (error) {
+        logger.error(`Error al recuperar avatar: ${error.message}`);
+        return response.status(500).json({ 
+            message: 'Error al recuperar la imagen de perfil', 
+            details: error.message 
+        });
+    }
+});
+
+router.get('/avatar/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (request, response) => {
+    try {
+        const userId = request.params.userId;
+        
+        const profile = await Profile.findOne({ 
+            where: { userId },
+            include: [{
+                model: User,
+                where: { activated: true },
+                required: true
+            }]
+        });
+
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 

@@ -53,16 +53,15 @@ router.get('/users', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), async (req
                             ]
                         };
                     }
-                } else if (filter.field == 'email') {
+                } else if (filter.field == 'email')
                     filterConditions.email = { [Sequelize.Op.iLike]: `%${filter.value}%` };
-                } else if (filter.field === 'dni') {
+                else if (filter.field === 'dni') {
                     if (filter.value === null)
                         profileConditions.dni = null;
                     else
                         profileConditions.dni = { [Sequelize.Op.like]: `%${filter.value}%` };
-                } else {
+                } else
                     filterConditions[filter.field] = filter.value;  // Filtros exactos en users, como role y activated
-                }
             }
         });
 
