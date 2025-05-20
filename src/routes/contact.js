@@ -28,7 +28,7 @@ router.post('/send-contact', limiter(5, 15), async (request, response) => {
 
         const personalizedHtml = htmlContent
             .replace('{{ message }}', message)
-            .replace('{{ name }}', email)
+            .replace('{{ name }}', name)
             .replace('{{ email }}', email);
 
         const mailContent = {
