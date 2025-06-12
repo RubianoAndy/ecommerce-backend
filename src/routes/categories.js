@@ -201,10 +201,13 @@ router.delete('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_AD
     }
 });
 
-// No necesita Middleware porque se necesita para el navbar
 router.get('/categories-small', async (request, response) => {
     try {
-        const categories = await Category.findAll({ attributes: ['id', 'name', 'url'] });       // Ignora los que tienen deleteAt diferente de null
+        // Ignora los que tienen deleteAt diferente de null
+        const categories = await Category.findAll({ 
+            attributes: ['id', 'name', 'url'],
+            order: [['name', 'ASC']]
+        });
         
         return response.status(200).json(categories);
     } catch (error) {
