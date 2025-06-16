@@ -133,10 +133,11 @@ router.get('/avatar', authMiddleware, async (request, response) => {
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
+        let imagePath;
         if (!profile.avatar)
-            return response.status(404).json({ message: 'Imagen de perfil no encontrada' });
-
-        const imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
+            imagePath = path.resolve(process.cwd(), 'public', 'assets', 'images', 'avatar', 'Avatar.png');
+        else
+            imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
 
         if (!await fs.access(imagePath).then(() => true).catch(() => false))
             return response.status(404).json({ message: 'Archivo de imagen no encontrado' });
@@ -175,10 +176,11 @@ router.get('/avatar/:userId', authMiddleware, roleMiddleware([ SUPER_ADMIN ]), a
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
+        let imagePath;
         if (!profile.avatar)
-            return response.status(404).json({ message: 'Imagen de perfil no encontrada' });
-
-        const imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
+            imagePath = path.resolve(process.cwd(), 'public', 'assets', 'images', 'avatar', 'Avatar.png');
+        else
+            imagePath = path.resolve(process.cwd(), AVATAR_PATH, profile.avatar);
 
         if (!await fs.access(imagePath).then(() => true).catch(() => false))
             return response.status(404).json({ message: 'Archivo de imagen no encontrado' });
