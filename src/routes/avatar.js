@@ -86,7 +86,6 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
         if (!profile)
             return response.status(404).json({ message: 'Perfil no encontrado' });
 
-        // Eliminar avatar anterior si existe
         if (profile.avatar) {
             const oldAvatarPath = path.join(process.cwd(), AVATAR_PATH, profile.avatar);
             await deleteOldAvatar(oldAvatarPath);
@@ -94,12 +93,11 @@ router.post('/avatar', authMiddleware, upload.single('profileImage'), async (req
 
         const outputFilePath = path.join(process.cwd(), AVATAR_PATH, `User-${userId}-Avatar-${Date.now()}.webp`);
 
-        await sharp(request.file.buffer)            // Usa el buffer de la imagen
+        await sharp(request.file.buffer)
             .resize(500, 500)
-            .toFormat('webp', { quality: 80 })      // Converti a formato WebP con calidad 80
-            .toFile(outputFilePath);                // Guarda la imagen procesada en disco
+            .toFormat('webp', { quality: 80 })
+            .toFile(outputFilePath);
 
-        // Actualiza el perfil con el nuevo nombre de archivo del avatar
         await profile.update(
             { avatar: path.basename(outputFilePath) }, 
             { where: { userId } }
