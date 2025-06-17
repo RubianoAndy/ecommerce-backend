@@ -26,6 +26,18 @@ module.exports = (sequelize) => {
                 }
             }
         },
+        description: {
+            type: DataTypes.STRING(500),
+            allowNull: false
+        },
+        observations: {
+            type: DataTypes.STRING(500),
+            allowNull: true
+        },
+        image: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
     }, {
         tableName: 'categories',
         timestamps: true,   // Habilita automáticamente createdAt y updatedAt

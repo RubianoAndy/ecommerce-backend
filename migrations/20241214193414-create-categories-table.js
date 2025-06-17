@@ -34,6 +34,18 @@ module.exports = {
         unique: true,
         allowNull: false
       },
+      description: {
+        type: Sequelize.STRING(500),
+        allowNull: false
+      },
+      observations: {
+        type: Sequelize.STRING(500),
+        allowNull: true
+      },
+      image: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
     });
 
     await queryInterface.addIndex('categories', ['name']);

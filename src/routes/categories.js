@@ -25,7 +25,7 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 3 * 1024 * 1024 }, // Límite de 3 MB
+    limits: { fileSize: 2 * 1024 * 1024 }, // Límite de 2 MB
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
         if (allowedTypes.includes(file.mimetype))
@@ -75,9 +75,13 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
         const query = {
             attributes: [
                 'id',
-                'name',
                 'createdAt',
                 'updatedAt',
+                'name',
+                'url',
+                'description',
+                'observations',
+                'image',
             ],
             where: filterConditions,
             limit: pageSize,
@@ -90,6 +94,14 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
 
         const categories = await Category.findAll(query);       // Ignora los que tienen deleteAt diferente de null
 
+        const categoriesWithImageUrls = categories.map(category => {
+            const categoryData = category.toJSON();
+            if (categoryData.image)
+                categoryData.imageUrl = `${process.env.BASE_URL}${CATEGORY_PATH}/${categoryData.image}`;
+            
+            return categoryData;
+        });
+
         const totalCategories = await Category.count({
             where: filterConditions,
             include: []
@@ -98,7 +110,7 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
         const totalPages = Math.ceil(totalCategories / pageSize);
         
         return response.status(200).json({
-            categories,
+            categories: categoriesWithImageUrls,
             page: page,
             pageSize: pageSize,
             totalPages: totalPages,
@@ -123,15 +135,20 @@ router.get('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN
     try {
         const category = await Category.findOne({ 
             where: { id: categoryId }, 
-            attributes: ['id', 'name', 'url'] 
+            attributes: ['id', 'name', 'url', 'description', 'observations', 'image'] 
         });
 
-        const result = {
-            // id: category.id,
-            name: category.name,
-            message: 'Categoría cargada exitosamente',
-        };
-        return response.status(200).json(result);
+        if (!category)
+            return response.status(404).json({ message: 'Categoría no encontrada' });
+
+        const categoryData = category.toJSON();
+        if (categoryData.image)
+            categoryData.imageUrl = `${process.env.BASE_URL}${CATEGORY_PATH}/${categoryData.image}`;
+
+        return response.status(200).json({
+            category: categoryData,
+            message: 'Categoría cargada exitosamente'
+        });
     } catch (error) {
         logger.error(`Error al obtener la categoría: ${error.message}`);
         return response.status(500).json({
@@ -178,7 +195,7 @@ router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]),
 
         return response.status(201).json({ 
             message: 'Categoría creada satisfactoriamente',
-            category
+            // category
         });
     } catch (error) {
         logger.error(`Error al crear la categoría: ${error.message}`);
