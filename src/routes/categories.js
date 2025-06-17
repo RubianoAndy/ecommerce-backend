@@ -158,6 +158,41 @@ router.get('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN
     }
 });
 
+router.get('/category-image/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), async (request, response) => {
+    try {
+        const categoryId = request.params.categoryId;
+        
+        const category = await Category.findByPk(categoryId);
+
+        if (!category)
+            return response.status(404).json({ message: 'Categoría no encontrada' });
+
+        if (!category.image)
+            return response.status(404).json({ message: 'Imagen de categoría no encontrada' });
+        
+        const imagePath = path.resolve(process.cwd(), CATEGORY_PATH, category.image);
+        
+        if (!await fs.access(imagePath).then(() => true).catch(() => false))
+            return response.status(404).json({ message: 'Archivo de imagen no encontrado' });
+
+        response.sendFile(imagePath, (error) => {
+            if (error) {
+                logger.error(`Error al enviar imagen: ${error.message}`);
+                return response.status(500).json({ 
+                    message: 'Error al enviar la imagen', 
+                    details: error.message 
+                });
+            }
+        });
+    } catch (error) {
+        logger.error(`Error al recuperar la imagen: ${error.message}`);
+        return response.status(500).json({ 
+            message: 'Error al recuperar la imagen de la categoría', 
+            details: error.message 
+        });
+    }
+});
+
 router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), upload.single('image'), async (request, response) => {
     const { name, url, description, observations } = request.body;
 
