@@ -3,6 +3,10 @@
 const express = require('express');
 const { Sequelize } = require('sequelize');
 const ExcelJS = require('exceljs');
+const multer = require('multer');
+const sharp = require('sharp');
+const fs = require('fs').promises;
+const path = require('path');
 require('dotenv').config();
 
 const logger = require('../config/logger');
@@ -14,6 +18,22 @@ const roleMiddleware = require('../middlewares/role-middleware');
 
 const SUPER_ADMIN = Number(process.env.SUPER_ADMIN);
 const ADMIN = Number(process.env.ADMIN);
+
+const CATEGORY_PATH = process.env.CATEGORY_PATH;
+
+const storage = multer.memoryStorage();
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 3 * 1024 * 1024 }, // Límite de 3 MB
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+        if (allowedTypes.includes(file.mimetype))
+            cb(null, true);
+        else
+            cb(new Error('Tipo de archivo no permitido. Solo se permiten PNG, JPEG, y WEBP.'), false);
+    }
+});
 
 const router = express.Router();
 
@@ -121,16 +141,45 @@ router.get('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN
     }
 });
 
-router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), async (request, response) => {
-    const { name } = request.body;
+router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), upload.single('image'), async (request, response) => {
+    const { name, url, description, observations } = request.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0)
         return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
 
-    try {
-        await Category.create({ name });
+    if (!request.file)
+        return response.status(400).json({ message: 'La imagen es requerida' });
 
-        return response.status(201).json({ message: 'Categoría creada satisfactoriamente' });
+    try {
+        // Asegurar que existe el directorio
+        const uploadDir = path.join(process.cwd(), CATEGORY_PATH);
+        await fs.mkdir(uploadDir, { recursive: true });
+
+        const uniqueSuffix = `category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        const extension = '.webp';
+        const filename = `${uniqueSuffix}${extension}`;
+        const filepath = path.join(uploadDir, filename);
+
+        await sharp(request.file.buffer)
+            .webp({ quality: 80 })
+            .resize(800, 800, {
+                fit: 'inside',
+                withoutEnlargement: true
+            })
+            .toFile(filepath);
+
+        const category = await Category.create({
+            name,
+            url,
+            description,
+            observations,
+            image: filename
+        });
+
+        return response.status(201).json({ 
+            message: 'Categoría creada satisfactoriamente',
+            category
+        });
     } catch (error) {
         logger.error(`Error al crear la categoría: ${error.message}`);
         return response.status(500).json({

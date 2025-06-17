@@ -46,11 +46,10 @@ const upload = multer({
     limits: { fileSize: 3 * 1024 * 1024 }, // Límite de 3 MB
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
+        if (allowedTypes.includes(file.mimetype))
             cb(null, true);
-        } else {
+        else
             cb(new Error('Tipo de archivo no permitido'), false);
-        }
     }
 });
 
