@@ -140,6 +140,7 @@ CUSTOMER=3
 
 # Storage uploads
 AVATAR_PATH=../storage-uploads/profile-images
+CATEGORY_PATH=../storage-uploads/category-images
 ```
 
 ⚠️ **Waring**: This data is fictitious and does not match the implementation in the production environment.
