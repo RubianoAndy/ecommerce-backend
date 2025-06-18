@@ -79,9 +79,9 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
                 'updatedAt',
                 'name',
                 'url',
-                'description',
-                'observations',
-                'image',
+                // 'description',
+                // 'observations',
+                // 'image',
             ],
             where: filterConditions,
             limit: pageSize,
@@ -94,13 +94,13 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
 
         const categories = await Category.findAll(query);       // Ignora los que tienen deleteAt diferente de null
 
-        const categoriesWithImageUrls = categories.map(category => {
+        /* const categoriesWithImageUrls = categories.map(category => {
             const categoryData = category.toJSON();
             if (categoryData.image)
                 categoryData.imageUrl = `${process.env.BASE_URL}${CATEGORY_PATH}/${categoryData.image}`;
             
             return categoryData;
-        });
+        }); */
 
         const totalCategories = await Category.count({
             where: filterConditions,
@@ -110,7 +110,7 @@ router.get('/categories', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ])
         const totalPages = Math.ceil(totalCategories / pageSize);
         
         return response.status(200).json({
-            categories: categoriesWithImageUrls,
+            categories: categories,         // categoriesWithImageUrls,
             page: page,
             pageSize: pageSize,
             totalPages: totalPages,
