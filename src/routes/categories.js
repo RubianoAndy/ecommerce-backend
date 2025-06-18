@@ -315,10 +315,10 @@ router.delete('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_AD
             return response.status(403).json({ message: 'La categoría ya había sido eliminada' });
 
         // Eliminar imagen asociada si existe
-        if (category.image) {
+        /* if (category.image) {
             const imagePath = path.join(process.cwd(), CATEGORY_PATH, category.image);
             await fs.unlink(imagePath).catch(() => {});
-        }
+        } */
 
         await category.destroy();       // No destruye el registro si el modelo tiene paranoid en true (soft delete)
 
