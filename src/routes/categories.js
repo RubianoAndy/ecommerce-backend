@@ -207,7 +207,7 @@ router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]),
         const uploadDir = path.join(process.cwd(), CATEGORY_PATH);
         await fs.mkdir(uploadDir, { recursive: true });
 
-        const uniqueSuffix = `category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        const uniqueSuffix = `Category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
         const extension = '.webp';
         const filename = `${uniqueSuffix}${extension}`;
         const filepath = path.join(uploadDir, filename);
@@ -265,7 +265,7 @@ router.put('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN
                 await fs.unlink(oldImagePath).catch(() => {});
             }
             // Guardar nueva imagen
-            const uniqueSuffix = `category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+            const uniqueSuffix = `Category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
             const extension = '.webp';
             filename = `${uniqueSuffix}${extension}`;
             const uploadDir = path.join(process.cwd(), CATEGORY_PATH);
