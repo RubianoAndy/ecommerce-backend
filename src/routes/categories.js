@@ -241,12 +241,13 @@ router.post('/category', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]),
     }
 });
 
-router.put('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), async (request, response) => {
+router.put('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN, ADMIN ]), upload.single('image'), async (request, response) => {
     const categoryId = request.params.categoryId;
+
     if (isNaN(categoryId) || categoryId <= 0)
         return response.status(400).json({ message: 'ID de la categoría inválido' });
 
-    const { name } = request.body;
+    const { name, url, description, observations } = request.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0)
         return response.status(400).json({ message: 'Los campos obligatorios están incompletos' });
@@ -256,14 +257,41 @@ router.put('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_ADMIN
         if (!category)
             return response.status(404).json({ message: 'No existe categoría asociada' });
 
+        let filename = category.image;
+        if (request.file) {
+            // Eliminar imagen anterior si existe
+            if (category.image) {
+                const oldImagePath = path.join(process.cwd(), CATEGORY_PATH, category.image);
+                await fs.unlink(oldImagePath).catch(() => {});
+            }
+            // Guardar nueva imagen
+            const uniqueSuffix = `category-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+            const extension = '.webp';
+            filename = `${uniqueSuffix}${extension}`;
+            const uploadDir = path.join(process.cwd(), CATEGORY_PATH);
+            await fs.mkdir(uploadDir, { recursive: true });
+            const filepath = path.join(uploadDir, filename);
+            await sharp(request.file.buffer)
+                .webp({ quality: 80 })
+                .resize(800, 800, {
+                    fit: 'inside',
+                    withoutEnlargement: true
+                })
+                .toFile(filepath);
+        }
+
         category.name = name;
+        category.url = url;
+        category.description = description;
+        category.observations = observations;
+        category.image = filename;
         await category.save();
 
         return response.status(200).json({ message: 'Categoría actualizada satisfactoriamente' });
     } catch (error) {
-        logger.error(`Error al crear la categoría: ${error.message}`);
+        logger.error(`Error al actualizar la categoría: ${error.message}`);
         return response.status(500).json({
-            message: 'Error al crear la categoría',
+            message: 'Error al actualizar la categoría',
             details: error.message,
         });
     }
@@ -285,9 +313,12 @@ router.delete('/category/:categoryId', authMiddleware, roleMiddleware([ SUPER_AD
 
         if (category.deletedAt)
             return response.status(403).json({ message: 'La categoría ya había sido eliminada' });
-        
-        // category.deletedAt = new Date();
-        // await category.save();
+
+        // Eliminar imagen asociada si existe
+        if (category.image) {
+            const imagePath = path.join(process.cwd(), CATEGORY_PATH, category.image);
+            await fs.unlink(imagePath).catch(() => {});
+        }
 
         await category.destroy();       // No destruye el registro si el modelo tiene paranoid en true (soft delete)
 
