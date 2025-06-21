@@ -35,7 +35,7 @@ router.post('/register', async (request, response) => {
         const newUser = await User.create({
             email,
             password: hashedPassword,
-            roleId: 3,  // Id para clientes
+            roleId: Number(process.env.CUSTOMER),  // Id para clientes
         });
 
         await Profile.create({

@@ -136,7 +136,8 @@ EMAIL_HOST_PASSWORD=<HOST-PASSWORD>
 # Roles
 SUPER_ADMIN=1
 ADMIN=2
-CUSTOMER=3
+SELLER=3
+CUSTOMER=4
 
 # Storage uploads
 AVATAR_PATH=../storage-uploads/profile-images
