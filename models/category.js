@@ -44,5 +44,9 @@ module.exports = (sequelize) => {
         paranoid: true,     // Habilita automáticamente soft delete (deletedAt)
     });
 
+    Category.associate = (models) => {
+        Category.hasMany(models.Product, { foreignKey: 'categoryId' });
+    };
+
     return Category;
 };
