@@ -25,7 +25,7 @@ module.exports = {
         allowNull: true,
       },
       profileId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         references: {
           model: 'profiles',
           key: 'id'
@@ -35,7 +35,7 @@ module.exports = {
         allowNull: false
       },
       countryId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         references: {
           model: 'countries',
           key: 'id'
@@ -45,7 +45,7 @@ module.exports = {
         allowNull: false
       },
       departmentId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         references: {
           model: 'departments',
           key: 'id'

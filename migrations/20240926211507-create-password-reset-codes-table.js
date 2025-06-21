@@ -21,7 +21,7 @@ module.exports = {
         defaultValue: Sequelize.NOW // Establece la fecha actual por defecto
       },
       userId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         references: {
           model: 'users',
           key: 'id'
