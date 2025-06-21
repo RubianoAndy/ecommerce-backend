@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         profileId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             references: {
                 model: 'profiles',
                 key: 'id'
@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         countryId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             references: {
                 model: 'countries',
                 key: 'id'
@@ -30,7 +30,7 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         departmentId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             references: {
               model: 'departments',
               key: 'id'

@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         userId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             allowNull: false,
             references: {
                 model: 'users', // Referencia a la tabla 'users'

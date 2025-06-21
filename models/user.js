@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         roleId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             references: {
                 model: 'roles',
                 key: 'id'
