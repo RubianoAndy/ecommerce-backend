@@ -153,7 +153,7 @@ When Sequelize is initialized, several files and folders are automatically gener
 | ---------------------------------------------------------- | :------------------------ |
 | `npx sequelize-cli migration:create --name migration-name` | Create the migration file |
 | `npx sequelize-cli db:migrate`                             | Run the migration         |
-| `npx sequelize-cli db:migrate:undo`                        | Revert the migration      |
+| `npx sequelize-cli db:migrate:undo`                        | Revert the last migration |
 | `npx sequelize-cli db:migrate:undo:all`                    | Revert all migrations     |
 
 <hr>
